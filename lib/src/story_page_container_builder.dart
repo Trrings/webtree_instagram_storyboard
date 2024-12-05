@@ -4,13 +4,11 @@ import 'package:flutter_instagram_storyboard/src/first_build_mixin.dart';
 import 'package:flutter_instagram_storyboard/src/set_state_after_frame_mixin.dart';
 
 class StoryPageContainerBuilder extends StatefulWidget {
-  final Widget? bottomWidget;
   final Animation<double> animation;
   final StoryContainerSettings settings;
 
   const StoryPageContainerBuilder({
     Key? key,
-    this.bottomWidget,
     required this.settings,
     required this.animation,
   }) : super(key: key);
@@ -19,7 +17,8 @@ class StoryPageContainerBuilder extends StatefulWidget {
   State<StoryPageContainerBuilder> createState() => _StoryPageContainerBuilderState();
 }
 
-class _StoryPageContainerBuilderState extends State<StoryPageContainerBuilder> with SetStateAfterFrame, FirstBuildMixin {
+class _StoryPageContainerBuilderState extends State<StoryPageContainerBuilder>
+    with SetStateAfterFrame, FirstBuildMixin {
   late PageController _pageController;
   late IStoryPageTransform _storyPageTransform;
   static const double kMaxPageOverscroll = .2;
@@ -161,7 +160,6 @@ class _StoryPageContainerBuilderState extends State<StoryPageContainerBuilder> w
 
   @override
   Widget build(BuildContext context) {
-    final Size size = MediaQuery.of(context).size;
     return IgnorePointer(
       ignoring: _isClosed,
       child: AnimatedBuilder(
@@ -196,49 +194,38 @@ class _StoryPageContainerBuilderState extends State<StoryPageContainerBuilder> w
             ),
             child: Scaffold(
               backgroundColor: Colors.transparent,
-              body: Column(
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: widget.settings.buttonData.containerBackgroundDecoration.copyWith(
-                        color: widget.settings.buttonData.containerBackgroundDecoration.color?.withOpacity(
-                          bgOpacity,
-                        ),
-                      ),
-                      child: SafeArea(
-                        bottom: widget.settings.safeAreaBottom,
-                        top: widget.settings.safeAreaTop,
-                        child: PageView.builder(
-                          physics: _storyPageTransform.pageScrollPhysics,
-                          controller: _pageController,
-                          itemBuilder: ((context, index) {
-                            final childIndex = index % itemCount;
-                            final buttonData = widget.settings.allButtonDatas[childIndex];
-                            final child = StoryPageContainerView(
-                              buttonData: buttonData,
-                              onClosePressed: _close,
-                              pageController: _pageController,
-                              onStoryComplete: _onStoryComplete,
-                            );
-                            return _storyPageTransform.transform(
-                              context,
-                              child,
-                              childIndex,
-                              _currentPage,
-                              _pageDelta,
-                            );
-                          }),
-                          itemCount: itemCount,
-                        ),
-                      ),
-                    ),
+              body: Container(
+                decoration: widget.settings.buttonData.containerBackgroundDecoration.copyWith(
+                  color: widget.settings.buttonData.containerBackgroundDecoration.color?.withOpacity(
+                    bgOpacity,
                   ),
-                  Container(
-                    height: 60,
-                    width: size.width,
-                    child: widget.bottomWidget,
-                  )
-                ],
+                ),
+                child: SafeArea(
+                  bottom: widget.settings.safeAreaBottom,
+                  top: widget.settings.safeAreaTop,
+                  child: PageView.builder(
+                    physics: _storyPageTransform.pageScrollPhysics,
+                    controller: _pageController,
+                    itemBuilder: ((context, index) {
+                      final childIndex = index % itemCount;
+                      final buttonData = widget.settings.allButtonDatas[childIndex];
+                      final child = StoryPageContainerView(
+                        buttonData: buttonData,
+                        onClosePressed: _close,
+                        pageController: _pageController,
+                        onStoryComplete: _onStoryComplete,
+                      );
+                      return _storyPageTransform.transform(
+                        context,
+                        child,
+                        childIndex,
+                        _currentPage,
+                        _pageDelta,
+                      );
+                    }),
+                    itemCount: itemCount,
+                  ),
+                ),
               ),
             ),
           );

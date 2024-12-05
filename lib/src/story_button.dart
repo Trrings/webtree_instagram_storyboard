@@ -29,7 +29,9 @@ class StoryButton extends StatefulWidget {
   State<StoryButton> createState() => _StoryButtonState();
 }
 
-class _StoryButtonState extends State<StoryButton> with SetStateAfterFrame, FirstBuildMixin implements IButtonPositionable, IWatchMarkable {
+class _StoryButtonState extends State<StoryButton>
+    with SetStateAfterFrame, FirstBuildMixin
+    implements IButtonPositionable, IWatchMarkable {
   double? _buttonWidth;
 
   @override
@@ -228,7 +230,6 @@ class StoryButtonData {
   final StoryTimelineController? storyController;
   final StoryWatchedContract storyWatchedContract;
   final Curve? pageAnimationCurve;
-  final Widget? bottomWidget;
   final Duration? pageAnimationDuration;
   final double aspectRatio;
   final BoxDecoration buttonDecoration;
@@ -281,7 +282,6 @@ class StoryButtonData {
   /// the button will not appear in button list. It might be necessary
   /// if you need to hide it for some reason
   StoryButtonData({
-    this.bottomWidget,
     this.storyWatchedContract = StoryWatchedContract.onStoryEnd,
     this.storyController,
     this.aspectRatio = 1.0,
@@ -328,7 +328,8 @@ class StoryButtonData {
     ),
     this.borderOffset = 2.0,
   }) : assert(
-          segmentDuration.first.inMilliseconds % kStoryTimerTickMillis == 0 && segmentDuration.first.inMilliseconds >= 1000,
+          segmentDuration.first.inMilliseconds % kStoryTimerTickMillis == 0 &&
+              segmentDuration.first.inMilliseconds >= 1000,
           'Segment duration in milliseconds must be a multiple of $kStoryTimerTickMillis and not less than 1000 milliseconds',
         );
 }
