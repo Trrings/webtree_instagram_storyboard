@@ -31,11 +31,13 @@ class StoryContainerSettings {
 }
 
 class StoryRoute extends ModalRoute {
+  final Widget? bottomWidget;
   final Duration? duration;
   final StoryContainerSettings storyContainerSettings;
 
   StoryRoute({
     this.duration,
+    this.bottomWidget,
     required this.storyContainerSettings,
   });
 
@@ -53,6 +55,7 @@ class StoryRoute extends ModalRoute {
   ) {
     return StoryPageContainerBuilder(
       animation: animation,
+      bottomWidget: bottomWidget,
       settings: storyContainerSettings,
     );
   }

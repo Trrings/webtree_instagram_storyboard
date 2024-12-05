@@ -49,16 +49,16 @@ class _StoryListViewState extends State<StoryListView> {
   void _onButtonPressed(StoryButtonData buttonData) {
     Navigator.of(context).push(
       StoryRoute(
-        storyContainerSettings: StoryContainerSettings(
-          buttonData: buttonData,
-          tapPosition: buttonData.buttonCenterPosition!,
-          curve: buttonData.pageAnimationCurve,
-          allButtonDatas: widget.buttonDatas,
-          pageTransform: widget.pageTransform,
-          storyListScrollController: _scrollController,
-        ),
-        duration: buttonData.pageAnimationDuration,
-      ),
+          storyContainerSettings: StoryContainerSettings(
+            buttonData: buttonData,
+            tapPosition: buttonData.buttonCenterPosition!,
+            curve: buttonData.pageAnimationCurve,
+            allButtonDatas: widget.buttonDatas,
+            pageTransform: widget.pageTransform,
+            storyListScrollController: _scrollController,
+          ),
+          duration: buttonData.pageAnimationDuration,
+          bottomWidget: buttonData.bottomWidget),
     );
   }
 
