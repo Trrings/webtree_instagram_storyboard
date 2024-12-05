@@ -30,6 +30,7 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView> with Fi
   Offset _pointerDownPosition = Offset.zero;
   int _pointerDownMillis = 0;
   double _pageValue = 0.0;
+  static const double bottomZoneHeight = 60.0; // Bottom 60 pixels area
 
   @override
   void initState() {
@@ -150,6 +151,12 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView> with Fi
     return position.dx <= (storyWidth * .499);
   }
 
+  // Checks if the position is within the bottom 60 pixels
+  bool _isInBottomZone(Offset position) {
+    final storyHeight = context.size?.height ?? 0.0;
+    return position.dy >= (storyHeight - bottomZoneHeight);
+  }
+
   Widget _buildPageStructure() {
     return Listener(
       onPointerDown: (PointerDownEvent event) {
@@ -161,6 +168,13 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView> with Fi
         final pointerUpMillis = _stopwatch.elapsedMilliseconds;
         final maxPressMillis = kPressTimeout.inMilliseconds * 2;
         final diffMillis = pointerUpMillis - _pointerDownMillis;
+
+        // Absorb the gesture if it's in the bottom zone (nothing happens)
+        if (_isInBottomZone(event.position)) {
+          return; // Do nothing, absorbing the gesture
+        }
+
+        // Debug statement: If gesture is not in bottom zone, print "Tapped"
         if (diffMillis <= maxPressMillis) {
           final position = event.position;
           final distance = (position - _pointerDownPosition).distance;
@@ -212,6 +226,7 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView> with Fi
     );
   }
 }
+
 
 enum StoryTimelineEvent {
   storyComplete,
