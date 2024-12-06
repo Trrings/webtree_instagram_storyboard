@@ -160,9 +160,12 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView> with Fi
   Widget _buildPageStructure() {
     return Listener(
       onPointerDown: (PointerDownEvent event) {
-        _pointerDownMillis = _stopwatch.elapsedMilliseconds;
-        _pointerDownPosition = event.position;
-        _storyController.pause();
+        // Only pause if the gesture is NOT in the bottom zone
+        if (!_isInBottomZone(event.position)) {
+          _pointerDownMillis = _stopwatch.elapsedMilliseconds;
+          _pointerDownPosition = event.position;
+          _storyController.pause();
+        }
       },
       onPointerUp: (PointerUpEvent event) {
         final pointerUpMillis = _stopwatch.elapsedMilliseconds;
@@ -171,10 +174,10 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView> with Fi
 
         // Absorb the gesture if it's in the bottom zone (nothing happens)
         if (_isInBottomZone(event.position)) {
-          return; // Do nothing, absorbing the gesture
+          return; // Do nothing, absorbing the gesture, don't pause the story
         }
 
-        // Debug statement: If gesture is not in bottom zone, print "Tapped"
+        // If the gesture is not in the bottom zone, handle the tap
         if (diffMillis <= maxPressMillis) {
           final position = event.position;
           final distance = (position - _pointerDownPosition).distance;
@@ -187,7 +190,11 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView> with Fi
             }
           }
         }
-        _storyController.unpause();
+
+        // Unpause only if gesture was not in the bottom zone
+        if (!_isInBottomZone(event.position)) {
+          _storyController.unpause();
+        }
       },
       child: SizedBox(
         width: double.infinity,
@@ -226,7 +233,6 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView> with Fi
     );
   }
 }
-
 
 enum StoryTimelineEvent {
   storyComplete,
