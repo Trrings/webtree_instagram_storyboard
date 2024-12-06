@@ -243,9 +243,9 @@ typedef StoryTimelineCallback = Function(StoryTimelineEvent, String);
 
 class StoryTimelineController {
   _StoryTimelineState? _state;
+  bool _isPaused = false;
 
   final HashSet<StoryTimelineCallback> _listeners = HashSet<StoryTimelineCallback>();
-  bool _isPaused = false;
 
   void addListener(StoryTimelineCallback callback) {
     _listeners.add(callback);
