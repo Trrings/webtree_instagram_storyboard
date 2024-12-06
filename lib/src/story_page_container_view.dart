@@ -245,6 +245,7 @@ class StoryTimelineController {
   _StoryTimelineState? _state;
 
   final HashSet<StoryTimelineCallback> _listeners = HashSet<StoryTimelineCallback>();
+  bool _isPaused = false;
 
   void addListener(StoryTimelineCallback callback) {
     _listeners.add(callback);
@@ -278,6 +279,8 @@ class StoryTimelineController {
 
   void pause() {
     _state?.pause();
+    _isPaused = true;
+    debugPrint("_isPaused: $_isPaused");
   }
 
   void _setTimelineAvailable(bool value) {
@@ -286,6 +289,8 @@ class StoryTimelineController {
 
   void unpause() {
     _state?.unpause();
+    _isPaused = false;
+    debugPrint("_isPaused: $_isPaused");
   }
 
   void dispose() {
