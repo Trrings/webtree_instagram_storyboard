@@ -245,6 +245,9 @@ class StoryTimelineController {
   _StoryTimelineState? _state;
   bool _isPaused = false;
 
+  // Public getter for _isPaused
+  bool get isPaused => _isPaused;
+
   final HashSet<StoryTimelineCallback> _listeners = HashSet<StoryTimelineCallback>();
 
   void addListener(StoryTimelineCallback callback) {
