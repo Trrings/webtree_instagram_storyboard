@@ -165,6 +165,8 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView> with Fi
           _pointerDownMillis = _stopwatch.elapsedMilliseconds;
           _pointerDownPosition = event.position;
           _storyController.pause();
+        }else{
+          _storyController.unpause();
         }
       },
       onPointerUp: (PointerUpEvent event) {
