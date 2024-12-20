@@ -322,7 +322,7 @@ class _StoryTimelineState extends State<StoryTimeline> {
   int _accumulatedTime = 0;
   int _maxAccumulator = 0;
   bool _isPaused = true;
-  bool _isTimelineAvailable = false;
+  bool _isTimelineAvailable = true;
 
   @override
   void initState() {
@@ -446,7 +446,7 @@ class _StoryTimelineState extends State<StoryTimeline> {
     return SizedBox(
       height: 2.0,
       width: double.infinity,
-      child: CustomPaint(
+      child: !_isPaused?CustomPaint(
         painter: _TimelinePainter(
           fillColor: widget.buttonData.timelineFillColor,
           backgroundColor: widget.buttonData.timelineBackgroundColor,
@@ -456,7 +456,7 @@ class _StoryTimelineState extends State<StoryTimeline> {
           spacing: widget.buttonData.timelineSpacing,
           thikness: widget.buttonData.timelineThikness,
         ),
-      ),
+      ):const SizedBox.shrink(),
     );
   }
 }
