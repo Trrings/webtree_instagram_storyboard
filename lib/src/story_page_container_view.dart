@@ -245,10 +245,13 @@ typedef StoryTimelineCallback = Function(StoryTimelineEvent, String);
 
 class StoryTimelineController {
   _StoryTimelineState? _state;
-  bool _isPaused = false;
+  bool _isPaused = true;
 
   // Public getter for _isPaused
   bool get isPaused => _isPaused;
+
+   // Public setter for _isPaused
+  
 
   final HashSet<StoryTimelineCallback> _listeners = HashSet<StoryTimelineCallback>();
 
