@@ -245,7 +245,7 @@ typedef StoryTimelineCallback = Function(StoryTimelineEvent, String);
 
 class StoryTimelineController {
   _StoryTimelineState? _state;
-  bool _isPaused = true;
+  bool _isPaused = false;
 
   // Public getter for _isPaused
   bool get isPaused => _isPaused;
@@ -321,8 +321,8 @@ class _StoryTimelineState extends State<StoryTimeline> {
   late Timer _timer;
   int _accumulatedTime = 0;
   int _maxAccumulator = 0;
-  bool _isPaused = true;
-  bool _isTimelineAvailable = false;
+  bool _isPaused = false;
+  bool _isTimelineAvailable = true;
 
   @override
   void initState() {
