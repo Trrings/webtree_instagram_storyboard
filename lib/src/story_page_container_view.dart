@@ -321,8 +321,8 @@ class _StoryTimelineState extends State<StoryTimeline> {
   late Timer _timer;
   int _accumulatedTime = 0;
   int _maxAccumulator = 0;
-  bool _isPaused = false;
-  bool _isTimelineAvailable = true;
+  bool _isPaused = true;
+  bool _isTimelineAvailable = false;
 
   @override
   void initState() {
