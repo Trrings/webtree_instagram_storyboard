@@ -24,7 +24,8 @@ class StoryPageContainerView extends StatefulWidget {
   State<StoryPageContainerView> createState() => _StoryPageContainerViewState();
 }
 
-class _StoryPageContainerViewState extends State<StoryPageContainerView> with FirstBuildMixin {
+class _StoryPageContainerViewState extends State<StoryPageContainerView>
+    with FirstBuildMixin {
   late StoryTimelineController _storyController;
   final Stopwatch _stopwatch = Stopwatch();
   Offset _pointerDownPosition = Offset.zero;
@@ -34,7 +35,8 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView> with Fi
 
   @override
   void initState() {
-    _storyController = widget.buttonData.storyController ?? StoryTimelineController();
+    _storyController =
+        widget.buttonData.storyController ?? StoryTimelineController();
     _stopwatch.start();
     _storyController.addListener(_onTimelineEvent);
     super.initState();
@@ -143,12 +145,31 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView> with Fi
     return widget.buttonData.storyPages[_curSegmentIndex];
   }
 
+  // bool _isLeftPartOfStory(Offset position) {
+  //   if (!mounted) {
+  //     return false;
+  //   }
+  //   final storyWidth = context.size!.width;
+  //   return position.dx <= (storyWidth * .499);
+  // }
   bool _isLeftPartOfStory(Offset position) {
     if (!mounted) {
       return false;
     }
     final storyWidth = context.size!.width;
-    return position.dx <= (storyWidth * .499);
+    // Define a smaller touchable area for the left side
+    return position.dx <=
+        (storyWidth * 0.25); // Reduce the touchable width to 25%
+  }
+
+  bool _isRightPartOfStory(Offset position) {
+    if (!mounted) {
+      return false;
+    }
+    final storyWidth = context.size!.width;
+    // Define a smaller touchable area for the right side
+    return position.dx >=
+        (storyWidth * 0.75); // Reduce the touchable width to 25%
   }
 
   // Checks if the position is within the bottom 60 pixels
@@ -160,12 +181,11 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView> with Fi
   Widget _buildPageStructure() {
     return Listener(
       onPointerDown: (PointerDownEvent event) {
-        // Only pause if the gesture is NOT in the bottom zone
         if (!_isInBottomZone(event.position)) {
           _pointerDownMillis = _stopwatch.elapsedMilliseconds;
           _pointerDownPosition = event.position;
           _storyController.pause();
-        }else{
+        } else {
           _storyController.unpause();
         }
       },
@@ -174,50 +194,103 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView> with Fi
         final maxPressMillis = kPressTimeout.inMilliseconds * 2;
         final diffMillis = pointerUpMillis - _pointerDownMillis;
 
-        // Absorb the gesture if it's in the bottom zone (nothing happens)
         if (_isInBottomZone(event.position)) {
-          return; // Do nothing, absorbing the gesture, don't pause the story
+          return; // Absorb the gesture
         }
 
-        // If the gesture is not in the bottom zone, handle the tap
         if (diffMillis <= maxPressMillis) {
           final position = event.position;
           final distance = (position - _pointerDownPosition).distance;
+
+          // Limit touchable area for next/previous story segment
           if (distance < 5.0) {
-            final isLeft = _isLeftPartOfStory(position);
-            if (isLeft) {
+            // Keep a small movement tolerance
+            if (_isLeftPartOfStory(position)) {
               _storyController.previousSegment();
-            } else {
+            } else if (_isRightPartOfStory(position)) {
               _storyController.nextSegment();
             }
           }
         }
 
-        // Unpause only if gesture was not in the bottom zone
-        if (!_isInBottomZone(event.position)) {
-          _storyController.unpause();
-        }
+        _storyController.unpause();
       },
-      child: SizedBox(
-        width: double.infinity,
-        height: double.infinity,
-        child: Stack(
-          children: [
-            _buildPageContent(),
-            SafeArea(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildTimeline(),
-                  _buildCloseButton(),
-                ],
-              ),
-            ),
-          ],
-        ),
+      child: Stack(
+        children: [
+          _buildPageContent(),
+          _buildTimeline(),
+          Positioned(
+            top: 0.0,
+            left: 0.0,
+            right: 0.0,
+            child: _buildCloseButton(),
+          ),
+        ],
       ),
     );
   }
+
+  // Widget _buildPageStructure() {
+  //   return Listener(
+  //     onPointerDown: (PointerDownEvent event) {
+  //       // Only pause if the gesture is NOT in the bottom zone
+  //       if (!_isInBottomZone(event.position)) {
+  //         _pointerDownMillis = _stopwatch.elapsedMilliseconds;
+  //         _pointerDownPosition = event.position;
+  //         _storyController.pause();
+  //       }else{
+  //         _storyController.unpause();
+  //       }
+  //     },
+  //     onPointerUp: (PointerUpEvent event) {
+  //       final pointerUpMillis = _stopwatch.elapsedMilliseconds;
+  //       final maxPressMillis = kPressTimeout.inMilliseconds * 2;
+  //       final diffMillis = pointerUpMillis - _pointerDownMillis;
+
+  //       // Absorb the gesture if it's in the bottom zone (nothing happens)
+  //       if (_isInBottomZone(event.position)) {
+  //         return; // Do nothing, absorbing the gesture, don't pause the story
+  //       }
+
+  //       // If the gesture is not in the bottom zone, handle the tap
+  //       if (diffMillis <= maxPressMillis) {
+  //         final position = event.position;
+  //         final distance = (position - _pointerDownPosition).distance;
+  //         if (distance < 5.0) {
+  //           final isLeft = _isLeftPartOfStory(position);
+  //           if (isLeft) {
+  //             _storyController.previousSegment();
+  //           } else {
+  //             _storyController.nextSegment();
+  //           }
+  //         }
+  //       }
+
+  //       // Unpause only if gesture was not in the bottom zone
+  //       if (!_isInBottomZone(event.position)) {
+  //         _storyController.unpause();
+  //       }
+  //     },
+  //     child: SizedBox(
+  //       width: double.infinity,
+  //       height: double.infinity,
+  //       child: Stack(
+  //         children: [
+  //           _buildPageContent(),
+  //           SafeArea(
+  //             child: Column(
+  //               mainAxisSize: MainAxisSize.min,
+  //               children: [
+  //                 _buildTimeline(),
+  //                 _buildCloseButton(),
+  //               ],
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   @override
   void dispose() {
@@ -250,7 +323,8 @@ class StoryTimelineController {
   // Public getter for _isPaused
   bool get isPaused => _isPaused;
 
-  final HashSet<StoryTimelineCallback> _listeners = HashSet<StoryTimelineCallback>();
+  final HashSet<StoryTimelineCallback> _listeners =
+      HashSet<StoryTimelineCallback>();
 
   void addListener(StoryTimelineCallback callback) {
     _listeners.add(callback);
@@ -326,7 +400,8 @@ class _StoryTimelineState extends State<StoryTimeline> {
 
   @override
   void initState() {
-    _maxAccumulator = widget.buttonData.segmentDuration[widget.buttonData.currentSegmentIndex].inMilliseconds;
+    _maxAccumulator = widget.buttonData
+        .segmentDuration[widget.buttonData.currentSegmentIndex].inMilliseconds;
     _timer = Timer.periodic(
       const Duration(
         milliseconds: kStoryTimerTickMillis,
@@ -335,7 +410,8 @@ class _StoryTimelineState extends State<StoryTimeline> {
     );
     widget.controller._state = this;
     super.initState();
-    if (widget.buttonData.storyWatchedContract == StoryWatchedContract.onStoryStart) {
+    if (widget.buttonData.storyWatchedContract ==
+        StoryWatchedContract.onStoryStart) {
       widget.buttonData.markAsWatched();
     }
   }
@@ -352,13 +428,19 @@ class _StoryTimelineState extends State<StoryTimeline> {
       _accumulatedTime += kStoryTimerTickMillis;
       if (_accumulatedTime >= _maxAccumulator) {
         if (_isLastSegment) {
-          _maxAccumulator = widget.buttonData.segmentDuration[widget.buttonData.currentSegmentIndex].inMilliseconds;
+          _maxAccumulator = widget
+              .buttonData
+              .segmentDuration[widget.buttonData.currentSegmentIndex]
+              .inMilliseconds;
           _onStoryComplete();
         } else {
           _accumulatedTime = 0;
           _onSegmentComplete();
           _curSegmentIndex++;
-          _maxAccumulator = widget.buttonData.segmentDuration[widget.buttonData.currentSegmentIndex].inMilliseconds;
+          _maxAccumulator = widget
+              .buttonData
+              .segmentDuration[widget.buttonData.currentSegmentIndex]
+              .inMilliseconds;
         }
       }
       setState(() {});
@@ -366,18 +448,22 @@ class _StoryTimelineState extends State<StoryTimeline> {
   }
 
   void _onStoryComplete() {
-    if (widget.buttonData.storyWatchedContract == StoryWatchedContract.onStoryEnd) {
+    if (widget.buttonData.storyWatchedContract ==
+        StoryWatchedContract.onStoryEnd) {
       widget.buttonData.markAsWatched();
     }
     widget.buttonData.currentSegmentIndex = 0;
-    widget.controller._onStoryComplete("${widget.buttonData.storyId}-${widget.buttonData.currentSegmentIndex}");
+    widget.controller._onStoryComplete(
+        "${widget.buttonData.storyId}-${widget.buttonData.currentSegmentIndex}");
   }
 
   void _onSegmentComplete() {
-    if (widget.buttonData.storyWatchedContract == StoryWatchedContract.onSegmentEnd) {
+    if (widget.buttonData.storyWatchedContract ==
+        StoryWatchedContract.onSegmentEnd) {
       widget.buttonData.markAsWatched();
     }
-    widget.controller._onSegmentComplete("${widget.buttonData.storyId}-${widget.buttonData.currentSegmentIndex}");
+    widget.controller._onSegmentComplete(
+        "${widget.buttonData.storyId}-${widget.buttonData.currentSegmentIndex}");
   }
 
   bool get _isLastSegment {
@@ -407,12 +493,16 @@ class _StoryTimelineState extends State<StoryTimeline> {
     if (_isLastSegment) {
       _accumulatedTime = _maxAccumulator;
       widget.buttonData.currentSegmentIndex = 0;
-      widget.controller._onStoryComplete("${widget.buttonData.storyId}-${widget.buttonData.currentSegmentIndex}");
+      widget.controller._onStoryComplete(
+          "${widget.buttonData.storyId}-${widget.buttonData.currentSegmentIndex}");
     } else {
       _accumulatedTime = 0;
       _onSegmentComplete();
       _curSegmentIndex++;
-      _maxAccumulator = widget.buttonData.segmentDuration[widget.buttonData.currentSegmentIndex].inMilliseconds;
+      _maxAccumulator = widget
+          .buttonData
+          .segmentDuration[widget.buttonData.currentSegmentIndex]
+          .inMilliseconds;
     }
   }
 
@@ -422,7 +512,10 @@ class _StoryTimelineState extends State<StoryTimeline> {
     } else {
       _accumulatedTime = 0;
       _curSegmentIndex--;
-      _maxAccumulator = widget.buttonData.segmentDuration[widget.buttonData.currentSegmentIndex].inMilliseconds;
+      _maxAccumulator = widget
+          .buttonData
+          .segmentDuration[widget.buttonData.currentSegmentIndex]
+          .inMilliseconds;
       _onSegmentComplete();
     }
   }
@@ -446,17 +539,19 @@ class _StoryTimelineState extends State<StoryTimeline> {
     return SizedBox(
       height: 2.0,
       width: double.infinity,
-      child: !_isPaused?CustomPaint(
-        painter: _TimelinePainter(
-          fillColor: widget.buttonData.timelineFillColor,
-          backgroundColor: widget.buttonData.timelineBackgroundColor,
-          curSegmentIndex: _curSegmentIndex,
-          numSegments: _numSegments,
-          percent: _accumulatedTime / _maxAccumulator,
-          spacing: widget.buttonData.timelineSpacing,
-          thikness: widget.buttonData.timelineThikness,
-        ),
-      ):const SizedBox.shrink(),
+      child: !_isPaused
+          ? CustomPaint(
+              painter: _TimelinePainter(
+                fillColor: widget.buttonData.timelineFillColor,
+                backgroundColor: widget.buttonData.timelineBackgroundColor,
+                curSegmentIndex: _curSegmentIndex,
+                numSegments: _numSegments,
+                percent: _accumulatedTime / _maxAccumulator,
+                spacing: widget.buttonData.timelineSpacing,
+                thikness: widget.buttonData.timelineThikness,
+              ),
+            )
+          : const SizedBox.shrink(),
     );
   }
 }
