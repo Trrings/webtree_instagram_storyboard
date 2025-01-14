@@ -129,6 +129,15 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
     );
   }
 
+  set _curSegmentIndex(int value) {
+    if (value >= _numSegments) {
+      value = _numSegments - 1;
+    } else if (value < 0) {
+      value = 0;
+    }
+    widget.buttonData.currentSegmentIndex = value;
+  }
+
   int get _curSegmentIndex {
     return widget.buttonData.currentSegmentIndex;
   }
@@ -178,6 +187,7 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
     return position.dy >= (storyHeight - bottomZoneHeight);
   }
 
+//latest
   Widget _buildPageStructure() {
     return Listener(
       onPointerDown: (PointerDownEvent event) {
@@ -195,20 +205,25 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
         final diffMillis = pointerUpMillis - _pointerDownMillis;
 
         if (_isInBottomZone(event.position)) {
-          return; // Absorb the gesture
+          return;
         }
 
         if (diffMillis <= maxPressMillis) {
           final position = event.position;
           final distance = (position - _pointerDownPosition).distance;
 
-          // Limit touchable area for next/previous story segment
           if (distance < 5.0) {
-            // Keep a small movement tolerance
             if (_isLeftPartOfStory(position)) {
               _storyController.previousSegment();
             } else if (_isRightPartOfStory(position)) {
-              _storyController.nextSegment();
+              if (_storyController.isLastSegment) {
+                _storyController._onStoryComplete(widget.buttonData.storyId);
+              } else {
+                _storyController._onSegmentComplete(widget.buttonData.storyId);
+                _curSegmentIndex++;
+                _storyController._state!._maxAccumulator = widget.buttonData
+                    .segmentDuration[_curSegmentIndex].inMilliseconds;
+              }
             }
           }
         }
@@ -230,6 +245,68 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
     );
   }
 
+  bool get isLastSegment {
+    return _curSegmentIndex == _numSegments - 1;
+  }
+
+  int get _numSegments {
+    return widget.buttonData.storyPages.length;
+  }
+
+//new
+  // Widget _buildPageStructure() {
+  //   return Listener(
+  //     onPointerDown: (PointerDownEvent event) {
+  //       if (!_isInBottomZone(event.position)) {
+  //         _pointerDownMillis = _stopwatch.elapsedMilliseconds;
+  //         _pointerDownPosition = event.position;
+  //         _storyController.pause();
+  //       } else {
+  //         _storyController.unpause();
+  //       }
+  //     },
+  //     onPointerUp: (PointerUpEvent event) {
+  //       final pointerUpMillis = _stopwatch.elapsedMilliseconds;
+  //       final maxPressMillis = kPressTimeout.inMilliseconds * 2;
+  //       final diffMillis = pointerUpMillis - _pointerDownMillis;
+
+  //       if (_isInBottomZone(event.position)) {
+  //         return; // Absorb the gesture
+  //       }
+
+  //       if (diffMillis <= maxPressMillis) {
+  //         final position = event.position;
+  //         final distance = (position - _pointerDownPosition).distance;
+
+  //         // Limit touchable area for next/previous story segment
+  //         if (distance < 5.0) {
+  //           // Keep a small movement tolerance
+  //           if (_isLeftPartOfStory(position)) {
+  //             _storyController.previousSegment();
+  //           } else if (_isRightPartOfStory(position)) {
+  //             _storyController.nextSegment();
+  //           }
+  //         }
+  //       }
+
+  //       _storyController.unpause();
+  //     },
+  //     child: Stack(
+  //       children: [
+  //         _buildPageContent(),
+  //         _buildTimeline(),
+  //         Positioned(
+  //           top: 0.0,
+  //           left: 0.0,
+  //           right: 0.0,
+  //           child: _buildCloseButton(),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+//old
   // Widget _buildPageStructure() {
   //   return Listener(
   //     onPointerDown: (PointerDownEvent event) {
@@ -322,6 +399,10 @@ class StoryTimelineController {
 
   // Public getter for _isPaused
   bool get isPaused => _isPaused;
+//new
+  bool get isLastSegment {
+    return _state?._isLastSegment ?? false; // Delegate to `_StoryTimelineState`
+  }
 
   final HashSet<StoryTimelineCallback> _listeners =
       HashSet<StoryTimelineCallback>();

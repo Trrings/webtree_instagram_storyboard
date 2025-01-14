@@ -195,34 +195,39 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
             buttonDatas: [
               StoryButtonData(
                 storyId: "1",
-                showAddButton: true,
+                //showAddButton: true,
                 storyController: storyController,
                 timelineBackgroundColor: Colors.red,
                 buttonDecoration: _buildButtonDecoration('car'),
                 child: _buildButtonChild('Want a new car?'),
-                // showAddButton: true,
                 onAddStoryPressed: () {
                   print('onAddStoryPressed');
                 },
                 borderDecoration: _buildBorderDecoration(Colors.red),
                 storyPages: [
                   _createDummyPage(
-                    text: 'Want to buy a new car? Get our loan for the rest of your life!',
+                    text:
+                        'Want to buy a new car? Get our loan for the rest of your life!',
                     imageName: 'car',
                   ),
                   _createDummyPage(
-                    text: 'Can\'t return the loan? Don\'t worry, we\'ll take your soul as a collateral ;-)',
+                    text:
+                        'Can\'t return the loan? Don\'t worry, we\'ll take your soul as a collateral ;-)',
                     imageName: 'car',
                   ),
                 ],
-                segmentDuration: [const Duration(seconds: 15), const Duration(seconds: 3)],
+                segmentDuration: [
+                  const Duration(seconds: 15),
+                  const Duration(seconds: 3)
+                ],
               ),
               StoryButtonData(
                 storyId: "2",
                 storyController: storyController,
                 timelineBackgroundColor: Colors.blue,
                 buttonDecoration: _buildButtonDecoration('travel_1'),
-                borderDecoration: _buildBorderDecoration(const Color.fromARGB(255, 134, 119, 95)),
+                borderDecoration: _buildBorderDecoration(
+                    const Color.fromARGB(255, 134, 119, 95)),
                 child: _buildButtonChild('Travel whereever'),
                 storyPages: [
                   _createDummyPage(
@@ -271,21 +276,27 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 borderDecoration: _buildBorderDecoration(Colors.red),
                 storyPages: [
                   _createDummyPage(
-                    text: 'Want to buy a new car? Get our loan for the rest of your life!',
+                    text:
+                        'Want to buy a new car? Get our loan for the rest of your life!',
                     imageName: 'car',
                   ),
                   _createDummyPage(
-                    text: 'Can\'t return the loan? Don\'t worry, we\'ll take your soul as a collateral ;-)',
+                    text:
+                        'Can\'t return the loan? Don\'t worry, we\'ll take your soul as a collateral ;-)',
                     imageName: 'car',
                   ),
                 ],
-                segmentDuration: [const Duration(seconds: 3), const Duration(seconds: 3)],
+                segmentDuration: [
+                  const Duration(seconds: 3),
+                  const Duration(seconds: 3)
+                ],
               ),
               StoryButtonData(
                 storyId: "5",
                 storyController: storyController,
                 buttonDecoration: _buildButtonDecoration('travel_1'),
-                borderDecoration: _buildBorderDecoration(const Color.fromARGB(255, 134, 119, 95)),
+                borderDecoration: _buildBorderDecoration(
+                    const Color.fromARGB(255, 134, 119, 95)),
                 child: _buildButtonChild('Travel whereever'),
                 storyPages: [
                   _createDummyPage(
@@ -304,7 +315,11 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                     addBottomBar: false,
                   ),
                 ],
-                segmentDuration: [const Duration(seconds: 3), const Duration(seconds: 3), const Duration(seconds: 3)],
+                segmentDuration: [
+                  const Duration(seconds: 3),
+                  const Duration(seconds: 3),
+                  const Duration(seconds: 3)
+                ],
               ),
               StoryButtonData(
                 storyId: "6",
