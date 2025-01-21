@@ -154,19 +154,11 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
     return widget.buttonData.storyPages[_curSegmentIndex];
   }
 
-  // bool _isLeftPartOfStory(Offset position) {
-  //   if (!mounted) {
-  //     return false;
-  //   }
-  //   final storyWidth = context.size!.width;
-  //   return position.dx <= (storyWidth * .499);
-  // }
   bool _isLeftPartOfStory(Offset position) {
     if (!mounted) {
       return false;
     }
     final storyWidth = context.size!.width;
-    // Define a smaller touchable area for the left side
     return position.dx <=
         (storyWidth * 0.25); // Reduce the touchable width to 25%
   }
@@ -216,13 +208,26 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
             if (_isLeftPartOfStory(position)) {
               _storyController.previousSegment();
             } else if (_isRightPartOfStory(position)) {
-              if (_storyController.isLastSegment) {
-                _storyController._onStoryComplete(widget.buttonData.storyId);
-              } else {
-                _storyController._onSegmentComplete(widget.buttonData.storyId);
-                _curSegmentIndex++;
-                _storyController._state!._maxAccumulator = widget.buttonData
-                    .segmentDuration[_curSegmentIndex].inMilliseconds;
+              // Complete current segment before proceeding
+              if (_storyController._state != null) {
+                // Set accumulated time to max to trigger completion
+                _storyController._state!._accumulatedTime =
+                    _storyController._state!._maxAccumulator;
+                if (_storyController.isLastSegment) {
+                  // If it's the last segment, complete the story
+                  _storyController._state!._onStoryComplete();
+                } else {
+                  // Complete current segment and prepare next
+                  _storyController._state!._onSegmentComplete();
+                  _curSegmentIndex++;
+                  _storyController._state!._maxAccumulator = widget.buttonData
+                      .segmentDuration[_curSegmentIndex].inMilliseconds;
+                  _storyController._state!._accumulatedTime = 0;
+                }
+                // Trigger setState to update the timeline
+                if (_storyController._state!.mounted) {
+                  _storyController._state!.setState(() {});
+                }
               }
             }
           }
@@ -244,16 +249,6 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
       ),
     );
   }
-
-  bool get isLastSegment {
-    return _curSegmentIndex == _numSegments - 1;
-  }
-
-  int get _numSegments {
-    return widget.buttonData.storyPages.length;
-  }
-
-//new
   // Widget _buildPageStructure() {
   //   return Listener(
   //     onPointerDown: (PointerDownEvent event) {
@@ -271,20 +266,25 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
   //       final diffMillis = pointerUpMillis - _pointerDownMillis;
 
   //       if (_isInBottomZone(event.position)) {
-  //         return; // Absorb the gesture
+  //         return;
   //       }
 
   //       if (diffMillis <= maxPressMillis) {
   //         final position = event.position;
   //         final distance = (position - _pointerDownPosition).distance;
 
-  //         // Limit touchable area for next/previous story segment
   //         if (distance < 5.0) {
-  //           // Keep a small movement tolerance
   //           if (_isLeftPartOfStory(position)) {
   //             _storyController.previousSegment();
   //           } else if (_isRightPartOfStory(position)) {
-  //             _storyController.nextSegment();
+  //             // Use the `_onTimer` logic to handle segment completion properly
+  //             if (_storyController.isLastSegment) {
+  //               _storyController._state
+  //                   ?._onStoryComplete(); // Complete the story
+  //             } else {
+  //               _storyController._state
+  //                   ?._onSegmentComplete(); // Complete current segment
+  //             }
   //           }
   //         }
   //       }
@@ -368,6 +368,14 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
   //     ),
   //   );
   // }
+
+  bool get isLastSegment {
+    return _curSegmentIndex == _numSegments - 1;
+  }
+
+  int get _numSegments {
+    return widget.buttonData.storyPages.length;
+  }
 
   @override
   void dispose() {
