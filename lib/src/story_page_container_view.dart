@@ -249,125 +249,6 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
       ),
     );
   }
-  // Widget _buildPageStructure() {
-  //   return Listener(
-  //     onPointerDown: (PointerDownEvent event) {
-  //       if (!_isInBottomZone(event.position)) {
-  //         _pointerDownMillis = _stopwatch.elapsedMilliseconds;
-  //         _pointerDownPosition = event.position;
-  //         _storyController.pause();
-  //       } else {
-  //         _storyController.unpause();
-  //       }
-  //     },
-  //     onPointerUp: (PointerUpEvent event) {
-  //       final pointerUpMillis = _stopwatch.elapsedMilliseconds;
-  //       final maxPressMillis = kPressTimeout.inMilliseconds * 2;
-  //       final diffMillis = pointerUpMillis - _pointerDownMillis;
-
-  //       if (_isInBottomZone(event.position)) {
-  //         return;
-  //       }
-
-  //       if (diffMillis <= maxPressMillis) {
-  //         final position = event.position;
-  //         final distance = (position - _pointerDownPosition).distance;
-
-  //         if (distance < 5.0) {
-  //           if (_isLeftPartOfStory(position)) {
-  //             _storyController.previousSegment();
-  //           } else if (_isRightPartOfStory(position)) {
-  //             // Use the `_onTimer` logic to handle segment completion properly
-  //             if (_storyController.isLastSegment) {
-  //               _storyController._state
-  //                   ?._onStoryComplete(); // Complete the story
-  //             } else {
-  //               _storyController._state
-  //                   ?._onSegmentComplete(); // Complete current segment
-  //             }
-  //           }
-  //         }
-  //       }
-
-  //       _storyController.unpause();
-  //     },
-  //     child: Stack(
-  //       children: [
-  //         _buildPageContent(),
-  //         _buildTimeline(),
-  //         Positioned(
-  //           top: 0.0,
-  //           left: 0.0,
-  //           right: 0.0,
-  //           child: _buildCloseButton(),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
-//old
-  // Widget _buildPageStructure() {
-  //   return Listener(
-  //     onPointerDown: (PointerDownEvent event) {
-  //       // Only pause if the gesture is NOT in the bottom zone
-  //       if (!_isInBottomZone(event.position)) {
-  //         _pointerDownMillis = _stopwatch.elapsedMilliseconds;
-  //         _pointerDownPosition = event.position;
-  //         _storyController.pause();
-  //       }else{
-  //         _storyController.unpause();
-  //       }
-  //     },
-  //     onPointerUp: (PointerUpEvent event) {
-  //       final pointerUpMillis = _stopwatch.elapsedMilliseconds;
-  //       final maxPressMillis = kPressTimeout.inMilliseconds * 2;
-  //       final diffMillis = pointerUpMillis - _pointerDownMillis;
-
-  //       // Absorb the gesture if it's in the bottom zone (nothing happens)
-  //       if (_isInBottomZone(event.position)) {
-  //         return; // Do nothing, absorbing the gesture, don't pause the story
-  //       }
-
-  //       // If the gesture is not in the bottom zone, handle the tap
-  //       if (diffMillis <= maxPressMillis) {
-  //         final position = event.position;
-  //         final distance = (position - _pointerDownPosition).distance;
-  //         if (distance < 5.0) {
-  //           final isLeft = _isLeftPartOfStory(position);
-  //           if (isLeft) {
-  //             _storyController.previousSegment();
-  //           } else {
-  //             _storyController.nextSegment();
-  //           }
-  //         }
-  //       }
-
-  //       // Unpause only if gesture was not in the bottom zone
-  //       if (!_isInBottomZone(event.position)) {
-  //         _storyController.unpause();
-  //       }
-  //     },
-  //     child: SizedBox(
-  //       width: double.infinity,
-  //       height: double.infinity,
-  //       child: Stack(
-  //         children: [
-  //           _buildPageContent(),
-  //           SafeArea(
-  //             child: Column(
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 _buildTimeline(),
-  //                 _buildCloseButton(),
-  //               ],
-  //             ),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 
   bool get isLastSegment {
     return _curSegmentIndex == _numSegments - 1;
@@ -404,6 +285,7 @@ typedef StoryTimelineCallback = Function(StoryTimelineEvent, String);
 class StoryTimelineController {
   _StoryTimelineState? _state;
   bool _isPaused = false;
+  static bool isTyping = false; // ✅ Global flag to track typing
 
   // Public getter for _isPaused
   bool get isPaused => _isPaused;
@@ -438,7 +320,10 @@ class StoryTimelineController {
   }
 
   void nextSegment() {
-    _state?.nextSegment();
+    if (!isTyping) {
+      // ✅ after-typing -move next-story
+      _state?.nextSegment();
+    }
   }
 
   void previousSegment() {
@@ -456,9 +341,21 @@ class StoryTimelineController {
   }
 
   void unpause() {
-    _state?.unpause();
-    _isPaused = false;
-    debugPrint("_isPaused: $_isPaused");
+    if (!isTyping) {
+      // ✅  typing
+      _state?.unpause();
+      _isPaused = false;
+      debugPrint("_isPaused: $_isPaused");
+    }
+  }
+
+  void setTypingState(bool typing) {
+    isTyping = typing;
+    if (isTyping) {
+      pause(); // ✅ Pause when typing starts
+    } else {
+      unpause(); // ✅ Resume when typing stops
+    }
   }
 
   void dispose() {
@@ -510,7 +407,8 @@ class _StoryTimelineState extends State<StoryTimeline> {
   }
 
   void _onTimer(timer) {
-    if (_isPaused || !_isTimelineAvailable) {
+    // if (_isPaused || !_isTimelineAvailable) {
+    if (_isPaused || StoryTimelineController.isTyping) { // ✅ Global flag to track typing
       return;
     }
     if (_accumulatedTime + kStoryTimerTickMillis <= _maxAccumulator) {

@@ -34,6 +34,9 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
   static const double _borderRadius = 100.0;
   final StoryTimelineController storyController = StoryTimelineController();
 
+  TextEditingController replayController = TextEditingController();
+  final focusNode = FocusNode();
+
   Widget _createDummyPage({
     required String text,
     required String imageName,
@@ -43,37 +46,75 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
       bottomNavigationBar: addBottomBar
           ? SizedBox(
               width: double.infinity,
-              height: kBottomNavigationBarHeight,
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 8.0,
-                  horizontal: 20.0,
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        width: double.infinity,
-                        height: double.infinity,
-                        decoration: BoxDecoration(
-                          border: Border.all(
-                            color: Colors.white,
-                            width: 2.0,
-                          ),
-                          borderRadius: BorderRadius.circular(
-                            _borderRadius,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+                child: SizedBox(
+                  height: 80,
+                  width: double.infinity,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 8.0),
+                          child: TextFormField(
+                            controller: replayController,
+                            focusNode: focusNode,
+                            onChanged: (value) {
+                              debugPrint("Typing in text field...");
+                              storyController
+                                  .setTypingState(true); // ✅ Pause all stories
+                            },
+                            onTap: () {
+                              debugPrint("Text field tapped.");
+                              storyController
+                                  .setTypingState(true); // ✅ Pause all stories
+                            },
+                            onTapOutside: (event) {
+                              debugPrint("Tapped outside.");
+                              focusNode.unfocus();
+                              storyController.setTypingState(
+                                  false); // ✅ Resume all stories
+                            },
+                            onEditingComplete: () {
+                              debugPrint("Editing complete.");
+                              focusNode.unfocus();
+                              storyController.setTypingState(
+                                  false); // ✅ Resume all stories
+                            },
+                            style: const TextStyle(color: Colors.black),
+                            decoration: InputDecoration(
+                              hintText: 'Type your message...',
+                              hintStyle: const TextStyle(color: Colors.black54),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25.0),
+                                borderSide: BorderSide.none,
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey[200],
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Icon(
-                        Icons.send,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
+                      SizedBox(
+                        height: 65,
+                        width: 65,
+                        child: IconButton(
+                          icon: Icon(Icons.send, color: Colors.red.shade400),
+                          onPressed: () {
+                            debugPrint("Message sent.");
+                            focusNode.unfocus();
+                            storyController
+                                .setTypingState(false); // ✅ Resume all stories
+                          },
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             )
@@ -83,9 +124,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
         height: double.infinity,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage(
-              'assets/images/$imageName.png',
-            ),
+            image: AssetImage('assets/images/$imageName.png'),
             fit: BoxFit.cover,
           ),
         ),
@@ -165,17 +204,34 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
   @override
   void initState() {
     super.initState();
-    storyController.addListener(
-      _onStoryEvent,
-    );
+    storyController.addListener(_onStoryEvent);
   }
 
   void _onStoryEvent(event, storyId) {
-    print('event=> ${event}  storyId ${storyId}');
+    debugPrint('Story Event: $event, Story ID: $storyId');
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    Future.delayed(Duration(milliseconds: 300), () {
+      if (mounted) {
+        focusNode.unfocus(); // Unfocus the keyboard when switching stories
+      }
+    });
+  }
+
+  /// ✅ Reset `replayController` when switching stories
+  void _resetReplayController() {
+    replayController.dispose(); // Dispose old controller
+    replayController = TextEditingController(); // Create a new one
   }
 
   @override
   void dispose() {
+    focusNode.dispose();
+    replayController.dispose();
     storyController.removeListener(_onStoryEvent);
     super.dispose();
   }
@@ -200,9 +256,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 timelineBackgroundColor: Colors.red,
                 buttonDecoration: _buildButtonDecoration('car'),
                 child: _buildButtonChild('Want a new car?'),
-                onAddStoryPressed: () {
-                  print('onAddStoryPressed');
-                },
+
                 borderDecoration: _buildBorderDecoration(Colors.red),
                 storyPages: [
                   _createDummyPage(
@@ -233,17 +287,16 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                   _createDummyPage(
                     text: 'Get a loan',
                     imageName: 'travel_1',
-                    addBottomBar: false,
                   ),
                   _createDummyPage(
                     text: 'Select a place where you want to go',
                     imageName: 'travel_2',
-                    addBottomBar: false,
+                    //addBottomBar: false,
                   ),
                   _createDummyPage(
                     text: 'Dream about the place and pay our interest',
                     imageName: 'travel_3',
-                    addBottomBar: false,
+                    //addBottomBar: false,
                   ),
                 ],
                 segmentDuration: [
@@ -302,17 +355,17 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                   _createDummyPage(
                     text: 'Get a loan',
                     imageName: 'travel_1',
-                    addBottomBar: false,
+                    //addBottomBar: false,
                   ),
                   _createDummyPage(
                     text: 'Select a place where you want to go',
                     imageName: 'travel_2',
-                    addBottomBar: false,
+                    //addBottomBar: false,
                   ),
                   _createDummyPage(
                     text: 'Dream about the place and pay our interest',
                     imageName: 'travel_3',
-                    addBottomBar: false,
+                    //addBottomBar: false,
                   ),
                 ],
                 segmentDuration: [
