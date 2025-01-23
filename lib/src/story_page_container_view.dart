@@ -407,8 +407,10 @@ class _StoryTimelineState extends State<StoryTimeline> {
   }
 
   void _onTimer(timer) {
-    // if (_isPaused || !_isTimelineAvailable) {
-    if (_isPaused || StoryTimelineController.isTyping) { // ✅ Global flag to track typing
+    if (_isPaused ||
+        !_isTimelineAvailable ||
+        StoryTimelineController.isTyping) {
+      //if (_isPaused || StoryTimelineController.isTyping) { // ✅ Global flag to track typing
       return;
     }
     if (_accumulatedTime + kStoryTimerTickMillis <= _maxAccumulator) {
