@@ -208,27 +208,7 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
             if (_isLeftPartOfStory(position)) {
               _storyController.previousSegment();
             } else if (_isRightPartOfStory(position)) {
-              // Complete current segment before proceeding
-              if (_storyController._state != null) {
-                // Set accumulated time to max to trigger completion
-                _storyController._state!._accumulatedTime =
-                    _storyController._state!._maxAccumulator;
-                if (_storyController.isLastSegment) {
-                  // If it's the last segment, complete the story
-                  _storyController._state!._onStoryComplete();
-                } else {
-                  // Complete current segment and prepare next
-                  _storyController._state!._onSegmentComplete();
-                  _curSegmentIndex++;
-                  _storyController._state!._maxAccumulator = widget.buttonData
-                      .segmentDuration[_curSegmentIndex].inMilliseconds;
-                  _storyController._state!._accumulatedTime = 0;
-                }
-                // Trigger setState to update the timeline
-                if (_storyController._state!.mounted) {
-                  _storyController._state!.setState(() {});
-                }
-              }
+              _handleRightTap();
             }
           }
         }
@@ -249,6 +229,100 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
       ),
     );
   }
+
+  void _handleRightTap() {
+    if (_storyController._state != null) {
+      if (_curSegmentIndex == widget.buttonData.storyPages.length - 1) {
+        // Last segment of current story
+        _storyController._state!._accumulatedTime =
+            _storyController._state!._maxAccumulator;
+        _storyController._state!._onStoryComplete();
+        widget.onStoryComplete();
+      } else {
+        // Move to next segment
+        _storyController._state!._accumulatedTime =
+            _storyController._state!._maxAccumulator;
+        _storyController._state!._onSegmentComplete();
+        _curSegmentIndex++;
+        _storyController._state!._maxAccumulator =
+            widget.buttonData.segmentDuration[_curSegmentIndex].inMilliseconds;
+        _storyController._state!._accumulatedTime = 0;
+      }
+      if (_storyController._state!.mounted) {
+        _storyController._state!.setState(() {});
+      }
+    }
+  }
+//old
+  // Widget _buildPageStructure() {
+  //   return Listener(
+  //     onPointerDown: (PointerDownEvent event) {
+  //       if (!_isInBottomZone(event.position)) {
+  //         _pointerDownMillis = _stopwatch.elapsedMilliseconds;
+  //         _pointerDownPosition = event.position;
+  //         _storyController.pause();
+  //       } else {
+  //         _storyController.unpause();
+  //       }
+  //     },
+  //     onPointerUp: (PointerUpEvent event) {
+  //       final pointerUpMillis = _stopwatch.elapsedMilliseconds;
+  //       final maxPressMillis = kPressTimeout.inMilliseconds * 2;
+  //       final diffMillis = pointerUpMillis - _pointerDownMillis;
+
+  //       if (_isInBottomZone(event.position)) {
+  //         return;
+  //       }
+
+  //       if (diffMillis <= maxPressMillis) {
+  //         final position = event.position;
+  //         final distance = (position - _pointerDownPosition).distance;
+
+  //         if (distance < 5.0) {
+  //           if (_isLeftPartOfStory(position)) {
+  //             _storyController.previousSegment();
+  //           } else if (_isRightPartOfStory(position)) {
+  //             // Complete current segment before proceeding
+  //             if (_storyController._state != null) {
+  //               // Set accumulated time to max to trigger completion
+  //               _storyController._state!._accumulatedTime =
+  //                   _storyController._state!._maxAccumulator;
+  //               if (_storyController.isLastSegment) {
+  //                 // If it's the last segment, complete the story
+  //                 _storyController._state!._onStoryComplete();
+  //               } else {
+  //                 // Complete current segment and prepare next
+  //                 _storyController._state!._onSegmentComplete();
+  //                 _curSegmentIndex++;
+  //                 _storyController._state!._maxAccumulator = widget.buttonData
+  //                     .segmentDuration[_curSegmentIndex].inMilliseconds;
+  //                 _storyController._state!._accumulatedTime = 0;
+  //               }
+  //               // Trigger setState to update the timeline
+  //               if (_storyController._state!.mounted) {
+  //                 _storyController._state!.setState(() {});
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+
+  //       _storyController.unpause();
+  //     },
+  //     child: Stack(
+  //       children: [
+  //         _buildPageContent(),
+  //         _buildTimeline(),
+  //         Positioned(
+  //           top: 0.0,
+  //           left: 0.0,
+  //           right: 0.0,
+  //           child: _buildCloseButton(),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   bool get isLastSegment {
     return _curSegmentIndex == _numSegments - 1;
