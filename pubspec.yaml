@@ -10,7 +10,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  get_storage:
+ 
 
 dev_dependencies:
   flutter_test:
