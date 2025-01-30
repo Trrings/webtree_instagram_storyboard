@@ -39,7 +39,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
 
   Widget _createDummyPage({
     required String text,
-    required String imageName,
+    required String imageUrl, // ✅ Use network image URL instead of asset name
     bool addBottomBar = true,
   }) {
     return StoryPageScaffold(
@@ -108,6 +108,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                           onPressed: () {
                             debugPrint("Message sent.");
                             focusNode.unfocus();
+                            replayController.clear();
                             storyController
                                 .setTypingState(false); // ✅ Resume all stories
                           },
@@ -124,7 +125,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
         height: double.infinity,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/$imageName.png'),
+            image: NetworkImage(imageUrl), // ✅ Load network image
             fit: BoxFit.cover,
           ),
         ),
@@ -141,7 +142,8 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                   fontSize: 30.0,
                   fontWeight: FontWeight.bold,
                 ),
-              )
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
         ),
@@ -262,12 +264,14 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                   _createDummyPage(
                     text:
                         'Want to buy a new car? Get our loan for the rest of your life!',
-                    imageName: 'car',
+                    imageUrl:
+                        'https://images.pexels.com/photos/213780/pexels-photo-213780.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
                   ),
                   _createDummyPage(
                     text:
                         'Can\'t return the loan? Don\'t worry, we\'ll take your soul as a collateral ;-)',
-                    imageName: 'car',
+                    imageUrl:
+                        'https://images.pexels.com/photos/2820884/pexels-photo-2820884.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
                   ),
                 ],
                 segmentDuration: [
@@ -286,16 +290,19 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 storyPages: [
                   _createDummyPage(
                     text: 'Get a loan',
-                    imageName: 'travel_1',
+                    imageUrl:
+                        'https://images.pexels.com/photos/2899097/pexels-photo-2899097.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
                   ),
                   _createDummyPage(
                     text: 'Select a place where you want to go',
-                    imageName: 'travel_2',
+                    imageUrl:
+                        'https://images.pexels.com/photos/213780/pexels-photo-213780.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
                     //addBottomBar: false,
                   ),
                   _createDummyPage(
                     text: 'Dream about the place and pay our interest',
-                    imageName: 'travel_3',
+                    imageUrl:
+                        'https://images.pexels.com/photos/2820884/pexels-photo-2820884.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
                     //addBottomBar: false,
                   ),
                 ],
@@ -315,7 +322,8 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 storyPages: [
                   _createDummyPage(
                     text: 'You cannot buy a house. Live with it',
-                    imageName: 'house',
+                    imageUrl:
+                        'https://images.pexels.com/photos/2899097/pexels-photo-2899097.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
                   ),
                 ],
                 segmentDuration: [const Duration(seconds: 5)],
@@ -331,12 +339,14 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                   _createDummyPage(
                     text:
                         'Want to buy a new car? Get our loan for the rest of your life!',
-                    imageName: 'car',
+                    imageUrl:
+                        'https://images.pexels.com/photos/213780/pexels-photo-213780.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
                   ),
                   _createDummyPage(
                     text:
                         'Can\'t return the loan? Don\'t worry, we\'ll take your soul as a collateral ;-)',
-                    imageName: 'car',
+                    imageUrl:
+                        'https://images.pexels.com/photos/2899097/pexels-photo-2899097.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
                   ),
                 ],
                 segmentDuration: [
@@ -354,17 +364,20 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 storyPages: [
                   _createDummyPage(
                     text: 'Get a loan',
-                    imageName: 'travel_1',
+                    imageUrl:
+                        'https://images.pexels.com/photos/213780/pexels-photo-213780.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
                     //addBottomBar: false,
                   ),
                   _createDummyPage(
                     text: 'Select a place where you want to go',
-                    imageName: 'travel_2',
+                    imageUrl:
+                        'https://images.pexels.com/photos/2899097/pexels-photo-2899097.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
                     //addBottomBar: false,
                   ),
                   _createDummyPage(
                     text: 'Dream about the place and pay our interest',
-                    imageName: 'travel_3',
+                    imageUrl:
+                        'https://images.pexels.com/photos/2820884/pexels-photo-2820884.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
                     //addBottomBar: false,
                   ),
                 ],
@@ -386,7 +399,8 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 storyPages: [
                   _createDummyPage(
                     text: 'You cannot buy a house. Live with it',
-                    imageName: 'house',
+                    imageUrl:
+                        'https://images.pexels.com/photos/213780/pexels-photo-213780.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
                   ),
                 ],
                 segmentDuration: [

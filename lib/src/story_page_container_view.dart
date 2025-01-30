@@ -231,6 +231,7 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
     );
   }
 
+  //new
   void _handleRightTap() {
     if (_storyController._state != null) {
       if (_curSegmentIndex == widget.buttonData.storyPages.length - 1) {
@@ -239,6 +240,13 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
             _storyController._state!._maxAccumulator;
         _storyController._state!._onStoryComplete();
         widget.onStoryComplete();
+
+        // 🔥 Fix: Ensure Timeline is reset on new story
+        Future.delayed(Duration(milliseconds: 50), () {
+          if (mounted) {
+            setState(() {}); // 🔄 Force rebuild to show StoryTimeline
+          }
+        });
       } else {
         // Move to next segment
         _storyController._state!._accumulatedTime =
@@ -248,12 +256,41 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
         _storyController._state!._maxAccumulator =
             widget.buttonData.segmentDuration[_curSegmentIndex].inMilliseconds;
         _storyController._state!._accumulatedTime = 0;
-      }
-      if (_storyController._state!.mounted) {
-        _storyController._state!.setState(() {});
+
+        // 🔥 Ensure StoryTimeline updates correctly
+        Future.delayed(Duration(milliseconds: 50), () {
+          if (mounted) {
+            setState(() {});
+          }
+        });
       }
     }
   }
+
+//old
+  // void _handleRightTap() {
+  //   if (_storyController._state != null) {
+  //     if (_curSegmentIndex == widget.buttonData.storyPages.length - 1) {
+  //       // Last segment of current story
+  //       _storyController._state!._accumulatedTime =
+  //           _storyController._state!._maxAccumulator;
+  //       _storyController._state!._onStoryComplete();
+  //       widget.onStoryComplete();
+  //     } else {
+  //       // Move to next segment
+  //       _storyController._state!._accumulatedTime =
+  //           _storyController._state!._maxAccumulator;
+  //       _storyController._state!._onSegmentComplete();
+  //       _curSegmentIndex++;
+  //       _storyController._state!._maxAccumulator =
+  //           widget.buttonData.segmentDuration[_curSegmentIndex].inMilliseconds;
+  //       _storyController._state!._accumulatedTime = 0;
+  //     }
+  //     if (_storyController._state!.mounted) {
+  //       _storyController._state!.setState(() {});
+  //     }
+  //   }
+  // }
 
   void _handleLeftTap() {
     if (_storyController._state != null) {
@@ -366,9 +403,19 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: _buildPageStructure(),
-    );
+        backgroundColor: Colors.transparent,
+        body: WillPopScope(
+          onWillPop: () async {
+            // 🔥 Force rebuild StoryTimeline when user presses back
+            Future.delayed(Duration(milliseconds: 100), () {
+              if (mounted) {
+                setState(() {});
+              }
+            });
+            return true;
+          },
+          child: _buildPageStructure(),
+        ));
   }
 }
 
@@ -507,11 +554,12 @@ class _StoryTimelineState extends State<StoryTimeline> {
     if (_isPaused ||
         !_isTimelineAvailable ||
         StoryTimelineController.isTyping) {
-      //if (_isPaused || StoryTimelineController.isTyping) { // ✅ Global flag to track typing
       return;
     }
+
     if (_accumulatedTime + kStoryTimerTickMillis <= _maxAccumulator) {
       _accumulatedTime += kStoryTimerTickMillis;
+
       if (_accumulatedTime >= _maxAccumulator) {
         if (_isLastSegment) {
           _maxAccumulator = widget
@@ -529,9 +577,40 @@ class _StoryTimelineState extends State<StoryTimeline> {
               .inMilliseconds;
         }
       }
-      setState(() {});
+      setState(() {}); // 🔥 Ensure UI updates with the StoryTimeline
     }
   }
+
+  //old
+  // void _onTimer(timer) {
+  //   if (_isPaused ||
+  //       !_isTimelineAvailable ||
+  //       StoryTimelineController.isTyping) {
+  //     //if (_isPaused || StoryTimelineController.isTyping) { // ✅ Global flag to track typing
+  //     return;
+  //   }
+  //   if (_accumulatedTime + kStoryTimerTickMillis <= _maxAccumulator) {
+  //     _accumulatedTime += kStoryTimerTickMillis;
+  //     if (_accumulatedTime >= _maxAccumulator) {
+  //       if (_isLastSegment) {
+  //         _maxAccumulator = widget
+  //             .buttonData
+  //             .segmentDuration[widget.buttonData.currentSegmentIndex]
+  //             .inMilliseconds;
+  //         _onStoryComplete();
+  //       } else {
+  //         _accumulatedTime = 0;
+  //         _onSegmentComplete();
+  //         _curSegmentIndex++;
+  //         _maxAccumulator = widget
+  //             .buttonData
+  //             .segmentDuration[widget.buttonData.currentSegmentIndex]
+  //             .inMilliseconds;
+  //       }
+  //     }
+  //     setState(() {});
+  //   }
+  // }
 
   void _onStoryComplete() {
     if (widget.buttonData.storyWatchedContract ==
