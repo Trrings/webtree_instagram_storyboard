@@ -5,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_instagram_storyboard/flutter_instagram_storyboard.dart';
 import 'package:flutter_instagram_storyboard/src/first_build_mixin.dart';
+import 'package:get_storage/get_storage.dart';
 
 class StoryPageContainerView extends StatefulWidget {
   final StoryButtonData buttonData;
@@ -231,24 +232,22 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
     );
   }
 
-  //new
   void _handleRightTap() {
     if (_storyController._state != null) {
       if (_curSegmentIndex == widget.buttonData.storyPages.length - 1) {
-        // Last segment of current story
         _storyController._state!._accumulatedTime =
             _storyController._state!._maxAccumulator;
         _storyController._state!._onStoryComplete();
         widget.onStoryComplete();
 
-        // 🔥 Fix: Ensure Timeline is reset on new story
+        // 🔥 Ensure Timeline is reset on new story
         Future.delayed(Duration(milliseconds: 50), () {
           if (mounted) {
-            setState(() {}); // 🔄 Force rebuild to show StoryTimeline
+            setState(() {});
+            _storyController.unpause();
           }
         });
       } else {
-        // Move to next segment
         _storyController._state!._accumulatedTime =
             _storyController._state!._maxAccumulator;
         _storyController._state!._onSegmentComplete();
@@ -266,6 +265,42 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
       }
     }
   }
+
+  //new one-by-one tap
+  // void _handleRightTap() {
+  //   if (_storyController._state != null) {
+  //     if (_curSegmentIndex == widget.buttonData.storyPages.length - 1) {
+  //       // Last segment of current story
+  //       _storyController._state!._accumulatedTime =
+  //           _storyController._state!._maxAccumulator;
+  //       _storyController._state!._onStoryComplete();
+  //       widget.onStoryComplete();
+
+  //       // 🔥 Fix: Ensure Timeline is reset on new story
+  //       Future.delayed(Duration(milliseconds: 50), () {
+  //         if (mounted) {
+  //           setState(() {}); // 🔄 Force rebuild to show StoryTimeline
+  //         }
+  //       });
+  //     } else {
+  //       // Move to next segment
+  //       _storyController._state!._accumulatedTime =
+  //           _storyController._state!._maxAccumulator;
+  //       _storyController._state!._onSegmentComplete();
+  //       _curSegmentIndex++;
+  //       _storyController._state!._maxAccumulator =
+  //           widget.buttonData.segmentDuration[_curSegmentIndex].inMilliseconds;
+  //       _storyController._state!._accumulatedTime = 0;
+
+  //       // 🔥 Ensure StoryTimeline updates correctly
+  //       Future.delayed(Duration(milliseconds: 50), () {
+  //         if (mounted) {
+  //           setState(() {});
+  //         }
+  //       });
+  //     }
+  //   }
+  // }
 
 //old
   // void _handleRightTap() {
@@ -430,6 +465,23 @@ class StoryTimelineController {
   _StoryTimelineState? _state;
   bool _isPaused = false;
   static bool isTyping = false; // ✅ Global flag to track typing
+  final _storage = GetStorage(); // Initialize local storage
+
+  StoryTimelineController() {
+    _restoreLastStoryState();
+  }
+  void _restoreLastStoryState() {
+    int? lastStoryIndex = _storage.read("last_story_index");
+    if (lastStoryIndex != null) {
+      _state?._curSegmentIndex = lastStoryIndex;
+      _state?._accumulatedTime = 0;
+      _state?.setState(() {}); // Refresh UI
+    }
+  }
+
+  void _saveLastStoryState() {
+    _storage.write("last_story_index", _state?._curSegmentIndex);
+  }
 
   // Public getter for _isPaused
   bool get isPaused => _isPaused;
@@ -465,13 +517,14 @@ class StoryTimelineController {
 
   void nextSegment() {
     if (!isTyping) {
-      // ✅ after-typing -move next-story
       _state?.nextSegment();
+      _saveLastStoryState(); // Save last segment index
     }
   }
 
   void previousSegment() {
     _state?.previousSegment();
+    _saveLastStoryState(); // Save last segment index
   }
 
   void pause() {
@@ -486,7 +539,6 @@ class StoryTimelineController {
 
   void unpause() {
     if (!isTyping) {
-      // ✅  typing
       _state?.unpause();
       _isPaused = false;
       debugPrint("_isPaused: $_isPaused");
@@ -503,6 +555,7 @@ class StoryTimelineController {
   }
 
   void dispose() {
+    _saveLastStoryState(); // Save last segment before disposing
     _listeners.clear();
   }
 }
@@ -530,16 +583,22 @@ class _StoryTimelineState extends State<StoryTimeline> {
 
   @override
   void initState() {
+    super.initState();
+    //stop-story-timeline
+    if (!mounted) return;
+
     _maxAccumulator = widget.buttonData
         .segmentDuration[widget.buttonData.currentSegmentIndex].inMilliseconds;
-    _timer = Timer.periodic(
-      const Duration(
-        milliseconds: kStoryTimerTickMillis,
-      ),
-      _onTimer,
-    );
+    if (_timer == null || !_timer.isActive) {
+      _timer = Timer.periodic(
+        const Duration(
+          milliseconds: kStoryTimerTickMillis,
+        ),
+        _onTimer,
+      );
+    }
     widget.controller._state = this;
-    super.initState();
+
     if (widget.buttonData.storyWatchedContract ==
         StoryWatchedContract.onStoryStart) {
       widget.buttonData.markAsWatched();
@@ -550,7 +609,8 @@ class _StoryTimelineState extends State<StoryTimeline> {
     _isTimelineAvailable = value;
   }
 
-  void _onTimer(timer) {
+//new
+  void _onTimer(Timer timer) {
     if (_isPaused ||
         !_isTimelineAvailable ||
         StoryTimelineController.isTyping) {
@@ -562,24 +622,50 @@ class _StoryTimelineState extends State<StoryTimeline> {
 
       if (_accumulatedTime >= _maxAccumulator) {
         if (_isLastSegment) {
-          _maxAccumulator = widget
-              .buttonData
-              .segmentDuration[widget.buttonData.currentSegmentIndex]
-              .inMilliseconds;
           _onStoryComplete();
         } else {
           _accumulatedTime = 0;
           _onSegmentComplete();
           _curSegmentIndex++;
           _maxAccumulator = widget
-              .buttonData
-              .segmentDuration[widget.buttonData.currentSegmentIndex]
-              .inMilliseconds;
+              .buttonData.segmentDuration[_curSegmentIndex].inMilliseconds;
         }
       }
       setState(() {}); // 🔥 Ensure UI updates with the StoryTimeline
     }
   }
+
+//old
+  // void _onTimer(timer) {
+  //   if (_isPaused ||
+  //       !_isTimelineAvailable ||
+  //       StoryTimelineController.isTyping) {
+  //     return;
+  //   }
+
+  //   if (_accumulatedTime + kStoryTimerTickMillis <= _maxAccumulator) {
+  //     _accumulatedTime += kStoryTimerTickMillis;
+
+  //     if (_accumulatedTime >= _maxAccumulator) {
+  //       if (_isLastSegment) {
+  //         _maxAccumulator = widget
+  //             .buttonData
+  //             .segmentDuration[widget.buttonData.currentSegmentIndex]
+  //             .inMilliseconds;
+  //         _onStoryComplete();
+  //       } else {
+  //         _accumulatedTime = 0;
+  //         _onSegmentComplete();
+  //         _curSegmentIndex++;
+  //         _maxAccumulator = widget
+  //             .buttonData
+  //             .segmentDuration[widget.buttonData.currentSegmentIndex]
+  //             .inMilliseconds;
+  //       }
+  //     }
+  //     setState(() {}); // 🔥 Ensure UI updates with the StoryTimeline
+  //   }
+  // }
 
   //old
   // void _onTimer(timer) {
@@ -695,7 +781,9 @@ class _StoryTimelineState extends State<StoryTimeline> {
 
   @override
   void dispose() {
-    _timer.cancel();
+    if (_timer.isActive) {
+      _timer.cancel();
+    }
     super.dispose();
   }
 

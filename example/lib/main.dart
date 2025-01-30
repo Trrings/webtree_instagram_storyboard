@@ -377,7 +377,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                   _createDummyPage(
                     text: 'Dream about the place and pay our interest',
                     imageUrl:
-                        'https://images.pexels.com/photos/2820884/pexels-photo-2820884.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+                        'https://images.pexels.com/photos/213780/pexels-photo-213780.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
                     //addBottomBar: false,
                   ),
                 ],
