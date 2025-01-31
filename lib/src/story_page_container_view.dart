@@ -259,16 +259,20 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
   void _handleLeftTap() {
     if (_storyController._state != null) {
       if (_curSegmentIndex == 0) {
-        // ✅ If on the first segment of a story, move to the last segment of the previous story
+        // ✅ First segment of current story, move to the last segment of the previous story
         if (_moveToPreviousUserStory()) {
           return;
         }
       } else {
         // ✅ Move to the previous segment within the same story
-        _curSegmentIndex--;
         _storyController._state!._accumulatedTime = 0;
+        _storyController._state!._onSegmentComplete();
+        _curSegmentIndex--;
+        _storyController._state!._maxAccumulator =
+            widget.buttonData.segmentDuration[_curSegmentIndex].inMilliseconds;
       }
 
+      // ✅ Ensure UI updates
       if (_storyController._state!.mounted) {
         _storyController._state!.setState(() {});
       }
@@ -281,6 +285,7 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
       final currentPage = pageController.page?.round() ?? 0;
 
       if (currentPage > 0) {
+        // ✅ Move to the previous user story
         pageController.animateToPage(
           currentPage - 1,
           duration: Duration(milliseconds: 300),
@@ -290,16 +295,62 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
         Future.delayed(Duration(milliseconds: 350), () {
           if (mounted) {
             setState(() {
+              // ✅ Move to the last segment of the previous story
               _curSegmentIndex = widget.buttonData.storyPages.length - 1;
             });
           }
         });
 
-        return true; // ✅ Successfully moved to previous user
+        return true; // ✅ Successfully moved to previous user story
       }
     }
-    return false; // ❌ No previous user available
+    return false; // ❌ No previous user story available
   }
+
+  // void _handleLeftTap() {
+  //   if (_storyController._state != null) {
+  //     if (_curSegmentIndex == 0) {
+  //       // ✅ If on the first segment of a story, move to the last segment of the previous story
+  //       if (_moveToPreviousUserStory()) {
+  //         return;
+  //       }
+  //     } else {
+  //       // ✅ Move to the previous segment within the same story
+  //       _curSegmentIndex--;
+  //       _storyController._state!._accumulatedTime = 0;
+  //     }
+
+  //     if (_storyController._state!.mounted) {
+  //       _storyController._state!.setState(() {});
+  //     }
+  //   }
+  // }
+
+  // bool _moveToPreviousUserStory() {
+  //   final pageController = widget.pageController;
+  //   if (pageController != null && pageController.hasClients) {
+  //     final currentPage = pageController.page?.round() ?? 0;
+
+  //     if (currentPage > 0) {
+  //       pageController.animateToPage(
+  //         currentPage - 1,
+  //         duration: Duration(milliseconds: 300),
+  //         curve: Curves.easeInOut,
+  //       );
+
+  //       Future.delayed(Duration(milliseconds: 350), () {
+  //         if (mounted) {
+  //           setState(() {
+  //             _curSegmentIndex = widget.buttonData.storyPages.length - 1;
+  //           });
+  //         }
+  //       });
+
+  //       return true; // ✅ Successfully moved to previous user
+  //     }
+  //   }
+  //   return false; // ❌ No previous user available
+  // }
 
 //old
   // Widget _buildPageStructure() {
