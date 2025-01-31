@@ -39,7 +39,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
 
   Widget _createDummyPage({
     required String text,
-    required String imageUrl, // ✅ Use network image URL instead of asset name
+    required String imageName,
     bool addBottomBar = true,
   }) {
     return StoryPageScaffold(
@@ -125,7 +125,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
         height: double.infinity,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: NetworkImage(imageUrl), // ✅ Load network image
+            image: AssetImage('assets/images/$imageName.png'),
             fit: BoxFit.cover,
           ),
         ),
@@ -142,8 +142,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                   fontSize: 30.0,
                   fontWeight: FontWeight.bold,
                 ),
-                textAlign: TextAlign.center,
-              ),
+              )
             ],
           ),
         ),
@@ -264,14 +263,12 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                   _createDummyPage(
                     text:
                         'Want to buy a new car? Get our loan for the rest of your life!',
-                    imageUrl:
-                        'https://images.pexels.com/photos/213780/pexels-photo-213780.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+                    imageName: 'car',
                   ),
                   _createDummyPage(
                     text:
                         'Can\'t return the loan? Don\'t worry, we\'ll take your soul as a collateral ;-)',
-                    imageUrl:
-                        'https://images.pexels.com/photos/2820884/pexels-photo-2820884.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+                    imageName: 'car',
                   ),
                 ],
                 segmentDuration: [
@@ -290,19 +287,16 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 storyPages: [
                   _createDummyPage(
                     text: 'Get a loan',
-                    imageUrl:
-                        'https://images.pexels.com/photos/2899097/pexels-photo-2899097.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+                    imageName: 'travel_1',
                   ),
                   _createDummyPage(
                     text: 'Select a place where you want to go',
-                    imageUrl:
-                        'https://images.pexels.com/photos/213780/pexels-photo-213780.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+                    imageName: 'travel_2',
                     //addBottomBar: false,
                   ),
                   _createDummyPage(
                     text: 'Dream about the place and pay our interest',
-                    imageUrl:
-                        'https://images.pexels.com/photos/2820884/pexels-photo-2820884.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+                    imageName: 'travel_3',
                     //addBottomBar: false,
                   ),
                 ],
@@ -322,8 +316,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 storyPages: [
                   _createDummyPage(
                     text: 'You cannot buy a house. Live with it',
-                    imageUrl:
-                        'https://images.pexels.com/photos/2899097/pexels-photo-2899097.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+                    imageName: 'house',
                   ),
                 ],
                 segmentDuration: [const Duration(seconds: 5)],
@@ -339,14 +332,12 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                   _createDummyPage(
                     text:
                         'Want to buy a new car? Get our loan for the rest of your life!',
-                    imageUrl:
-                        'https://images.pexels.com/photos/213780/pexels-photo-213780.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+                    imageName: 'car',
                   ),
                   _createDummyPage(
                     text:
                         'Can\'t return the loan? Don\'t worry, we\'ll take your soul as a collateral ;-)',
-                    imageUrl:
-                        'https://images.pexels.com/photos/2899097/pexels-photo-2899097.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+                    imageName: 'car',
                   ),
                 ],
                 segmentDuration: [
@@ -364,20 +355,17 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 storyPages: [
                   _createDummyPage(
                     text: 'Get a loan',
-                    imageUrl:
-                        'https://images.pexels.com/photos/213780/pexels-photo-213780.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+                    imageName: 'travel_1',
                     //addBottomBar: false,
                   ),
                   _createDummyPage(
                     text: 'Select a place where you want to go',
-                    imageUrl:
-                        'https://images.pexels.com/photos/2899097/pexels-photo-2899097.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+                    imageName: 'travel_2',
                     //addBottomBar: false,
                   ),
                   _createDummyPage(
                     text: 'Dream about the place and pay our interest',
-                    imageUrl:
-                        'https://images.pexels.com/photos/213780/pexels-photo-213780.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+                    imageName: 'travel_3',
                     //addBottomBar: false,
                   ),
                 ],
@@ -399,8 +387,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 storyPages: [
                   _createDummyPage(
                     text: 'You cannot buy a house. Live with it',
-                    imageUrl:
-                        'https://images.pexels.com/photos/213780/pexels-photo-213780.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+                    imageName: 'house',
                   ),
                 ],
                 segmentDuration: [
