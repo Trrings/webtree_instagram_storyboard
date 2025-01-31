@@ -276,6 +276,77 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
     }
   }
 
+//old
+  // Widget _buildPageStructure() {
+  //   return Listener(
+  //     onPointerDown: (PointerDownEvent event) {
+  //       if (!_isInBottomZone(event.position)) {
+  //         _pointerDownMillis = _stopwatch.elapsedMilliseconds;
+  //         _pointerDownPosition = event.position;
+  //         _storyController.pause();
+  //       } else {
+  //         _storyController.unpause();
+  //       }
+  //     },
+  //     onPointerUp: (PointerUpEvent event) {
+  //       final pointerUpMillis = _stopwatch.elapsedMilliseconds;
+  //       final maxPressMillis = kPressTimeout.inMilliseconds * 2;
+  //       final diffMillis = pointerUpMillis - _pointerDownMillis;
+
+  //       if (_isInBottomZone(event.position)) {
+  //         return;
+  //       }
+
+  //       if (diffMillis <= maxPressMillis) {
+  //         final position = event.position;
+  //         final distance = (position - _pointerDownPosition).distance;
+
+  //         if (distance < 5.0) {
+  //           if (_isLeftPartOfStory(position)) {
+  //             _storyController.previousSegment();
+  //           } else if (_isRightPartOfStory(position)) {
+  //             // Complete current segment before proceeding
+  //             if (_storyController._state != null) {
+  //               // Set accumulated time to max to trigger completion
+  //               _storyController._state!._accumulatedTime =
+  //                   _storyController._state!._maxAccumulator;
+  //               if (_storyController.isLastSegment) {
+  //                 // If it's the last segment, complete the story
+  //                 _storyController._state!._onStoryComplete();
+  //               } else {
+  //                 // Complete current segment and prepare next
+  //                 _storyController._state!._onSegmentComplete();
+  //                 _curSegmentIndex++;
+  //                 _storyController._state!._maxAccumulator = widget.buttonData
+  //                     .segmentDuration[_curSegmentIndex].inMilliseconds;
+  //                 _storyController._state!._accumulatedTime = 0;
+  //               }
+  //               // Trigger setState to update the timeline
+  //               if (_storyController._state!.mounted) {
+  //                 _storyController._state!.setState(() {});
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+
+  //       _storyController.unpause();
+  //     },
+  //     child: Stack(
+  //       children: [
+  //         _buildPageContent(),
+  //         _buildTimeline(),
+  //         Positioned(
+  //           top: 0.0,
+  //           left: 0.0,
+  //           right: 0.0,
+  //           child: _buildCloseButton(),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
   bool get isLastSegment {
     return _curSegmentIndex == _numSegments - 1;
   }
@@ -403,72 +474,28 @@ class StoryTimeline extends StatefulWidget {
   State<StoryTimeline> createState() => _StoryTimelineState();
 }
 
-class _StoryTimelineState extends State<StoryTimeline>
-    with WidgetsBindingObserver {
+class _StoryTimelineState extends State<StoryTimeline> {
   late Timer _timer;
   int _accumulatedTime = 0;
   int _maxAccumulator = 0;
   bool _isPaused = false;
   bool _isTimelineAvailable = true;
 
-  //timer
-  bool _isTransitioning = false;
-  Timer? _watchdogTimer;
-
-  // @override
-  // void initState() {
-  //   _maxAccumulator = widget.buttonData
-  //       .segmentDuration[widget.buttonData.currentSegmentIndex].inMilliseconds;
-  //   _timer = Timer.periodic(
-  //     const Duration(
-  //       milliseconds: kStoryTimerTickMillis,
-  //     ),
-  //     _onTimer,
-  //   );
-  //   widget.controller._state = this;
-  //   super.initState();
-  //   if (widget.buttonData.storyWatchedContract ==
-  //       StoryWatchedContract.onStoryStart) {
-  //     widget.buttonData.markAsWatched();
-  //   }
-  // }
   @override
   void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _initializeTimeline();
-    _startWatchdogTimer();
-  }
-
-  void _initializeTimeline() {
     _maxAccumulator = widget.buttonData
         .segmentDuration[widget.buttonData.currentSegmentIndex].inMilliseconds;
-    _ensureTimerRunning();
+    _timer = Timer.periodic(
+      const Duration(
+        milliseconds: kStoryTimerTickMillis,
+      ),
+      _onTimer,
+    );
     widget.controller._state = this;
-
+    super.initState();
     if (widget.buttonData.storyWatchedContract ==
         StoryWatchedContract.onStoryStart) {
       widget.buttonData.markAsWatched();
-    }
-  }
-
-  void _startWatchdogTimer() {
-    _watchdogTimer?.cancel();
-    _watchdogTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      if (!_isPaused &&
-          !StoryTimelineController.isTyping &&
-          !_isTransitioning) {
-        _ensureTimerRunning();
-      }
-    });
-  }
-
-  void _ensureTimerRunning() {
-    if (_timer?.isActive != true) {
-      _timer = Timer.periodic(
-        const Duration(milliseconds: kStoryTimerTickMillis),
-        _onTimer,
-      );
     }
   }
 
@@ -476,75 +503,33 @@ class _StoryTimelineState extends State<StoryTimeline>
     _isTimelineAvailable = value;
   }
 
-  // void _onTimer(timer) {
-  //   if (_isPaused ||
-  //       !_isTimelineAvailable ||
-  //       StoryTimelineController.isTyping) {
-  //     //if (_isPaused || StoryTimelineController.isTyping) { // ✅ Global flag to track typing
-  //     return;
-  //   }
-  //   if (_accumulatedTime + kStoryTimerTickMillis <= _maxAccumulator) {
-  //     _accumulatedTime += kStoryTimerTickMillis;
-  //     if (_accumulatedTime >= _maxAccumulator) {
-  //       if (_isLastSegment) {
-  //         _maxAccumulator = widget
-  //             .buttonData
-  //             .segmentDuration[widget.buttonData.currentSegmentIndex]
-  //             .inMilliseconds;
-  //         _onStoryComplete();
-  //       } else {
-  //         _accumulatedTime = 0;
-  //         _onSegmentComplete();
-  //         _curSegmentIndex++;
-  //         _maxAccumulator = widget
-  //             .buttonData
-  //             .segmentDuration[widget.buttonData.currentSegmentIndex]
-  //             .inMilliseconds;
-  //       }
-  //     }
-  //     setState(() {});
-  //   }
-  // }
-
-  void _onTimer(Timer timer) {
+  void _onTimer(timer) {
     if (_isPaused ||
         !_isTimelineAvailable ||
-        StoryTimelineController.isTyping ||
-        _isTransitioning) {
+        StoryTimelineController.isTyping) {
+      //if (_isPaused || StoryTimelineController.isTyping) { // ✅ Global flag to track typing
       return;
     }
-
     if (_accumulatedTime + kStoryTimerTickMillis <= _maxAccumulator) {
-      setState(() {
-        _accumulatedTime += kStoryTimerTickMillis;
-        if (_accumulatedTime >= _maxAccumulator) {
-          _handleSegmentComplete();
+      _accumulatedTime += kStoryTimerTickMillis;
+      if (_accumulatedTime >= _maxAccumulator) {
+        if (_isLastSegment) {
+          _maxAccumulator = widget
+              .buttonData
+              .segmentDuration[widget.buttonData.currentSegmentIndex]
+              .inMilliseconds;
+          _onStoryComplete();
+        } else {
+          _accumulatedTime = 0;
+          _onSegmentComplete();
+          _curSegmentIndex++;
+          _maxAccumulator = widget
+              .buttonData
+              .segmentDuration[widget.buttonData.currentSegmentIndex]
+              .inMilliseconds;
         }
-      });
-    }
-  }
-
-  void _handleSegmentComplete() {
-    if (_isLastSegment) {
-      _maxAccumulator = widget
-          .buttonData
-          .segmentDuration[widget.buttonData.currentSegmentIndex]
-          .inMilliseconds;
-      _onStoryComplete();
-    } else {
-      _accumulatedTime = 0;
-      _onSegmentComplete();
-      _curSegmentIndex++;
-      _updateMaxAccumulator();
-    }
-  }
-
-  void _updateMaxAccumulator() {
-    _maxAccumulator =
-        widget.buttonData.segmentDuration[_curSegmentIndex].inMilliseconds;
-    // Ensure minimum duration
-    if (_maxAccumulator < 1000) {
-      _maxAccumulator = 1000;
+      }
+      setState(() {});
     }
   }
 
@@ -590,146 +575,69 @@ class _StoryTimelineState extends State<StoryTimeline>
 
   int currentSegmentIndex() => _curSegmentIndex;
 
-  // void nextSegment() {
-  //   if (_isLastSegment) {
-  //     _accumulatedTime = _maxAccumulator;
-  //     widget.buttonData.currentSegmentIndex = 0;
-  //     widget.controller._onStoryComplete(
-  //         "${widget.buttonData.storyId}-${widget.buttonData.currentSegmentIndex}");
-  //   } else {
-  //     _accumulatedTime = 0;
-  //     _onSegmentComplete();
-  //     _curSegmentIndex++;
-  //     _maxAccumulator = widget
-  //         .buttonData
-  //         .segmentDuration[widget.buttonData.currentSegmentIndex]
-  //         .inMilliseconds;
-  //   }
-  // }
-
   void nextSegment() {
-    _isTransitioning = true;
     if (_isLastSegment) {
       _accumulatedTime = _maxAccumulator;
       widget.buttonData.currentSegmentIndex = 0;
       widget.controller._onStoryComplete(
           "${widget.buttonData.storyId}-${widget.buttonData.currentSegmentIndex}");
     } else {
-      setState(() {
-        _accumulatedTime = 0;
-        _onSegmentComplete();
-        _curSegmentIndex++;
-        _updateMaxAccumulator();
-      });
+      _accumulatedTime = 0;
+      _onSegmentComplete();
+      _curSegmentIndex++;
+      _maxAccumulator = widget
+          .buttonData
+          .segmentDuration[widget.buttonData.currentSegmentIndex]
+          .inMilliseconds;
     }
-    // Use Future.delayed to ensure smooth transition
-    Future.delayed(const Duration(milliseconds: 50), () {
-      _isTransitioning = false;
-      _ensureTimerRunning();
-    });
   }
 
   void previousSegment() {
-    _isTransitioning = true;
-    setState(() {
-      if (_curSegmentIndex > 0) {
-        _accumulatedTime = 0;
-        _curSegmentIndex--;
-        _updateMaxAccumulator();
-        _onSegmentComplete();
-      }
-    });
-    Future.delayed(const Duration(milliseconds: 50), () {
-      _isTransitioning = false;
-      _ensureTimerRunning();
-    });
+    if (_accumulatedTime == _maxAccumulator) {
+      _accumulatedTime = 0;
+    } else {
+      _accumulatedTime = 0;
+      _curSegmentIndex--;
+      _maxAccumulator = widget
+          .buttonData
+          .segmentDuration[widget.buttonData.currentSegmentIndex]
+          .inMilliseconds;
+      _onSegmentComplete();
+    }
   }
-  // void previousSegment() {
-  //   if (_accumulatedTime == _maxAccumulator) {
-  //     _accumulatedTime = 0;
-  //   } else {
-  //     _accumulatedTime = 0;
-  //     _curSegmentIndex--;
-  //     _maxAccumulator = widget
-  //         .buttonData
-  //         .segmentDuration[widget.buttonData.currentSegmentIndex]
-  //         .inMilliseconds;
-  //     _onSegmentComplete();
-  //   }
-  // }
 
   void pause() {
     _isPaused = true;
-    _timer.cancel();
   }
 
   void unpause() {
-    if (!StoryTimelineController.isTyping) {
-      _isPaused = false;
-      _ensureTimerRunning();
-    }
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    switch (state) {
-      case AppLifecycleState.paused:
-        pause();
-        break;
-      case AppLifecycleState.resumed:
-        _initializeTimeline();
-        unpause();
-        break;
-      default:
-        break;
-    }
+    _isPaused = false;
   }
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
     _timer.cancel();
-    _watchdogTimer?.cancel();
     super.dispose();
   }
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return SizedBox(
-  //     height: 2.0,
-  //     width: double.infinity,
-  //     child: !_isPaused
-  //         ? CustomPaint(
-  //             painter: _TimelinePainter(
-  //               fillColor: widget.buttonData.timelineFillColor,
-  //               backgroundColor: widget.buttonData.timelineBackgroundColor,
-  //               curSegmentIndex: _curSegmentIndex,
-  //               numSegments: _numSegments,
-  //               percent: _accumulatedTime / _maxAccumulator,
-  //               spacing: widget.buttonData.timelineSpacing,
-  //               thikness: widget.buttonData.timelineThikness,
-  //             ),
-  //           )
-  //         : const SizedBox.shrink(),
-  //   );
-  // }
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       height: 2.0,
       width: double.infinity,
-      child: CustomPaint(
-        painter: _TimelinePainter(
-          fillColor: widget.buttonData.timelineFillColor,
-          backgroundColor: widget.buttonData.timelineBackgroundColor,
-          curSegmentIndex: _curSegmentIndex,
-          numSegments: _numSegments,
-          percent: _accumulatedTime / _maxAccumulator,
-          spacing: widget.buttonData.timelineSpacing,
-          thikness: widget.buttonData.timelineThikness,
-          isTransitioning: _isTransitioning,
-        ),
-      ),
+      child: !_isPaused
+          ? CustomPaint(
+              painter: _TimelinePainter(
+                fillColor: widget.buttonData.timelineFillColor,
+                backgroundColor: widget.buttonData.timelineBackgroundColor,
+                curSegmentIndex: _curSegmentIndex,
+                numSegments: _numSegments,
+                percent: _accumulatedTime / _maxAccumulator,
+                spacing: widget.buttonData.timelineSpacing,
+                thikness: widget.buttonData.timelineThikness,
+              ),
+            )
+          : const SizedBox.shrink(),
     );
   }
 }
@@ -742,7 +650,6 @@ class _TimelinePainter extends CustomPainter {
   final double percent;
   final double spacing;
   final double thikness;
-  final bool isTransitioning;
 
   _TimelinePainter({
     required this.fillColor,
@@ -752,7 +659,6 @@ class _TimelinePainter extends CustomPainter {
     required this.percent,
     required this.spacing,
     required this.thikness,
-    required this.isTransitioning,
   });
 
   @override
@@ -766,44 +672,57 @@ class _TimelinePainter extends CustomPainter {
     final fillPaint = Paint()
       ..strokeCap = StrokeCap.round
       ..strokeWidth = thikness
-      ..color = fillColor.withOpacity(isTransitioning ? 0.7 : 1.0)
+      ..color = fillColor
       ..style = PaintingStyle.stroke;
 
     final maxSpacing = (numSegments - 1) * spacing;
     final maxSegmentLength = (size.width - maxSpacing) / numSegments;
 
-    // Draw background lines
     for (var i = 0; i < numSegments; i++) {
-      final start = Offset(((maxSegmentLength + spacing) * i), 0.0);
-      final end = Offset(start.dx + maxSegmentLength, 0.0);
-      canvas.drawLine(start, end, bgPaint);
+      final start = Offset(
+        ((maxSegmentLength + spacing) * i),
+        0.0,
+      );
+      final end = Offset(
+        start.dx + maxSegmentLength,
+        0.0,
+      );
+
+      canvas.drawLine(
+        start,
+        end,
+        bgPaint,
+      );
     }
 
-    // Draw progress lines
     for (var i = 0; i < numSegments; i++) {
-      final start = Offset(((maxSegmentLength + spacing) * i), 0.0);
+      final start = Offset(
+        ((maxSegmentLength + spacing) * i),
+        0.0,
+      );
       var endValue = start.dx;
-
       if (curSegmentIndex > i) {
         endValue = start.dx + maxSegmentLength;
       } else if (curSegmentIndex == i) {
         endValue = start.dx + (maxSegmentLength * percent);
       }
-
-      if (endValue > start.dx) {
-        canvas.drawLine(
-          start,
-          Offset(endValue, 0.0),
-          fillPaint,
-        );
+      final end = Offset(
+        endValue,
+        0.0,
+      );
+      if (endValue == start.dx) {
+        continue;
       }
+      canvas.drawLine(
+        start,
+        end,
+        fillPaint,
+      );
     }
   }
 
   @override
-  bool shouldRepaint(covariant _TimelinePainter oldDelegate) {
-    return oldDelegate.curSegmentIndex != curSegmentIndex ||
-        oldDelegate.percent != percent ||
-        oldDelegate.isTransitioning != isTransitioning;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
   }
 }
