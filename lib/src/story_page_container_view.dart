@@ -582,23 +582,22 @@ class _StoryTimelineState extends State<StoryTimeline> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-        height: 2.0,
-        width: double.infinity,
-        child:
-            //!_isPaused
-            CustomPaint(
-          painter: _TimelinePainter(
-            fillColor: widget.buttonData.timelineFillColor,
-            backgroundColor: widget.buttonData.timelineBackgroundColor,
-            curSegmentIndex: _curSegmentIndex,
-            numSegments: _numSegments,
-            percent: _accumulatedTime / _maxAccumulator,
-            spacing: widget.buttonData.timelineSpacing,
-            thikness: widget.buttonData.timelineThikness,
-          ),
-        )
-        //: const SizedBox.shrink(),
-        );
+      height: 2.0,
+      width: double.infinity,
+      child: !_isPaused
+          ? CustomPaint(
+              painter: _TimelinePainter(
+                fillColor: widget.buttonData.timelineFillColor,
+                backgroundColor: widget.buttonData.timelineBackgroundColor,
+                curSegmentIndex: _curSegmentIndex,
+                numSegments: _numSegments,
+                percent: _accumulatedTime / _maxAccumulator,
+                spacing: widget.buttonData.timelineSpacing,
+                thikness: widget.buttonData.timelineThikness,
+              ),
+            )
+          : const SizedBox.shrink(),
+    );
   }
 }
 
