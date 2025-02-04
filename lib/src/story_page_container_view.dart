@@ -296,8 +296,6 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
             setState(() {
               // ✅ Move to the last segment of the previous story
               _curSegmentIndex = widget.buttonData.storyPages.length - 1;
-             
-              
             });
           }
         });
@@ -464,10 +462,10 @@ class _StoryTimelineState extends State<StoryTimeline> {
   }
 
   void _onTimer(timer) {
-    if (_isPaused ||
-        !_isTimelineAvailable ||
-        StoryTimelineController.isTyping) {
-      //if (_isPaused || StoryTimelineController.isTyping) { // ✅ Global flag to track typing
+    // if (_isPaused ||
+    //     !_isTimelineAvailable ||
+    //     StoryTimelineController.isTyping) {
+    if (_isPaused || StoryTimelineController.isTyping) {
       return;
     }
     if (_accumulatedTime + kStoryTimerTickMillis <= _maxAccumulator) {
