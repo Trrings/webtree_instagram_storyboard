@@ -297,6 +297,8 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
             setState(() {
               // ✅ Move to the last segment of the previous story
               _curSegmentIndex = widget.buttonData.storyPages.length - 1;
+               _storyController._state!._accumulatedTime = 0;
+        _storyController._state!._onSegmentComplete();
             });
           }
         });
