@@ -264,7 +264,7 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
           return;
         }
       } else {
-        // ✅ Move to the previous segment within the same story
+        //  Move to the previous segment within the same story
         _storyController._state!._accumulatedTime = 0;
         _storyController._state!._onSegmentComplete();
         _curSegmentIndex--;
@@ -272,7 +272,6 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
             widget.buttonData.segmentDuration[_curSegmentIndex].inMilliseconds;
       }
 
-      // ✅ Ensure UI updates
       if (_storyController._state!.mounted) {
         _storyController._state!.setState(() {});
       }
@@ -308,122 +307,6 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
     }
     return false; // ❌ No previous user story available
   }
-
-  // void _handleLeftTap() {
-  //   if (_storyController._state != null) {
-  //     if (_curSegmentIndex == 0) {
-  //       // ✅ If on the first segment of a story, move to the last segment of the previous story
-  //       if (_moveToPreviousUserStory()) {
-  //         return;
-  //       }
-  //     } else {
-  //       // ✅ Move to the previous segment within the same story
-  //       _curSegmentIndex--;
-  //       _storyController._state!._accumulatedTime = 0;
-  //     }
-
-  //     if (_storyController._state!.mounted) {
-  //       _storyController._state!.setState(() {});
-  //     }
-  //   }
-  // }
-
-  // bool _moveToPreviousUserStory() {
-  //   final pageController = widget.pageController;
-  //   if (pageController != null && pageController.hasClients) {
-  //     final currentPage = pageController.page?.round() ?? 0;
-
-  //     if (currentPage > 0) {
-  //       pageController.animateToPage(
-  //         currentPage - 1,
-  //         duration: Duration(milliseconds: 300),
-  //         curve: Curves.easeInOut,
-  //       );
-
-  //       Future.delayed(Duration(milliseconds: 350), () {
-  //         if (mounted) {
-  //           setState(() {
-  //             _curSegmentIndex = widget.buttonData.storyPages.length - 1;
-  //           });
-  //         }
-  //       });
-
-  //       return true; // ✅ Successfully moved to previous user
-  //     }
-  //   }
-  //   return false; // ❌ No previous user available
-  // }
-
-//old
-  // Widget _buildPageStructure() {
-  //   return Listener(
-  //     onPointerDown: (PointerDownEvent event) {
-  //       if (!_isInBottomZone(event.position)) {
-  //         _pointerDownMillis = _stopwatch.elapsedMilliseconds;
-  //         _pointerDownPosition = event.position;
-  //         _storyController.pause();
-  //       } else {
-  //         _storyController.unpause();
-  //       }
-  //     },
-  //     onPointerUp: (PointerUpEvent event) {
-  //       final pointerUpMillis = _stopwatch.elapsedMilliseconds;
-  //       final maxPressMillis = kPressTimeout.inMilliseconds * 2;
-  //       final diffMillis = pointerUpMillis - _pointerDownMillis;
-
-  //       if (_isInBottomZone(event.position)) {
-  //         return;
-  //       }
-
-  //       if (diffMillis <= maxPressMillis) {
-  //         final position = event.position;
-  //         final distance = (position - _pointerDownPosition).distance;
-
-  //         if (distance < 5.0) {
-  //           if (_isLeftPartOfStory(position)) {
-  //             _storyController.previousSegment();
-  //           } else if (_isRightPartOfStory(position)) {
-  //             // Complete current segment before proceeding
-  //             if (_storyController._state != null) {
-  //               // Set accumulated time to max to trigger completion
-  //               _storyController._state!._accumulatedTime =
-  //                   _storyController._state!._maxAccumulator;
-  //               if (_storyController.isLastSegment) {
-  //                 // If it's the last segment, complete the story
-  //                 _storyController._state!._onStoryComplete();
-  //               } else {
-  //                 // Complete current segment and prepare next
-  //                 _storyController._state!._onSegmentComplete();
-  //                 _curSegmentIndex++;
-  //                 _storyController._state!._maxAccumulator = widget.buttonData
-  //                     .segmentDuration[_curSegmentIndex].inMilliseconds;
-  //                 _storyController._state!._accumulatedTime = 0;
-  //               }
-  //               // Trigger setState to update the timeline
-  //               if (_storyController._state!.mounted) {
-  //                 _storyController._state!.setState(() {});
-  //               }
-  //             }
-  //           }
-  //         }
-  //       }
-
-  //       _storyController.unpause();
-  //     },
-  //     child: Stack(
-  //       children: [
-  //         _buildPageContent(),
-  //         _buildTimeline(),
-  //         Positioned(
-  //           top: 0.0,
-  //           left: 0.0,
-  //           right: 0.0,
-  //           child: _buildCloseButton(),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   bool get isLastSegment {
     return _curSegmentIndex == _numSegments - 1;
@@ -496,7 +379,6 @@ class StoryTimelineController {
 
   void nextSegment() {
     if (!isTyping) {
-      // ✅ after-typing -move next-story
       _state?.nextSegment();
     }
   }
@@ -527,9 +409,9 @@ class StoryTimelineController {
   void setTypingState(bool typing) {
     isTyping = typing;
     if (isTyping) {
-      pause(); // ✅ Pause when typing starts
+      pause();
     } else {
-      unpause(); // ✅ Resume when typing stops
+      unpause();
     }
   }
 
@@ -701,22 +583,23 @@ class _StoryTimelineState extends State<StoryTimeline> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 2.0,
-      width: double.infinity,
-      child: !_isPaused
-          ? CustomPaint(
-              painter: _TimelinePainter(
-                fillColor: widget.buttonData.timelineFillColor,
-                backgroundColor: widget.buttonData.timelineBackgroundColor,
-                curSegmentIndex: _curSegmentIndex,
-                numSegments: _numSegments,
-                percent: _accumulatedTime / _maxAccumulator,
-                spacing: widget.buttonData.timelineSpacing,
-                thikness: widget.buttonData.timelineThikness,
-              ),
-            )
-          : const SizedBox.shrink(),
-    );
+        height: 2.0,
+        width: double.infinity,
+        child:
+            //!_isPaused
+            CustomPaint(
+          painter: _TimelinePainter(
+            fillColor: widget.buttonData.timelineFillColor,
+            backgroundColor: widget.buttonData.timelineBackgroundColor,
+            curSegmentIndex: _curSegmentIndex,
+            numSegments: _numSegments,
+            percent: _accumulatedTime / _maxAccumulator,
+            spacing: widget.buttonData.timelineSpacing,
+            thikness: widget.buttonData.timelineThikness,
+          ),
+        )
+        //: const SizedBox.shrink(),
+        );
   }
 }
 
