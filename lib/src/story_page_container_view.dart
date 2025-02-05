@@ -375,6 +375,10 @@ class StoryTimelineController {
     }
   }
 
+  void reset() {
+    _state?.resetTimeline(); // Call the reset function in _StoryTimelineState
+  }
+
   void nextSegment() {
     if (!isTyping) {
       _state?.nextSegment();
@@ -455,6 +459,14 @@ class _StoryTimelineState extends State<StoryTimeline> {
         StoryWatchedContract.onStoryStart) {
       widget.buttonData.markAsWatched();
     }
+  }
+
+  void resetTimeline() {
+    setState(() {
+      _accumulatedTime = 0; // Reset progress to 0
+      _curSegmentIndex = 0; // Move to the first story segment
+      _maxAccumulator = widget.buttonData.segmentDuration.first.inMilliseconds;
+    });
   }
 
   void _setTimelineAvailable(bool value) {
