@@ -296,8 +296,6 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
             setState(() {
               // ✅ Move to the last segment of the previous story
               _curSegmentIndex = widget.buttonData.storyPages.length - 1;
-             
-              
             });
           }
         });
@@ -375,6 +373,10 @@ class StoryTimelineController {
     for (var e in _listeners) {
       e.call(event, storyId);
     }
+  }
+
+  void reset() {
+    _state?.resetTimeline(); // Call the reset function in _StoryTimelineState
   }
 
   void nextSegment() {
@@ -457,6 +459,14 @@ class _StoryTimelineState extends State<StoryTimeline> {
         StoryWatchedContract.onStoryStart) {
       widget.buttonData.markAsWatched();
     }
+  }
+
+  void resetTimeline() {
+    setState(() {
+      _accumulatedTime = 0; // Reset progress to 0
+      _curSegmentIndex = 0; // Move to the first story segment
+      _maxAccumulator = widget.buttonData.segmentDuration.first.inMilliseconds;
+    });
   }
 
   void _setTimelineAvailable(bool value) {
@@ -585,8 +595,7 @@ class _StoryTimelineState extends State<StoryTimeline> {
     return SizedBox(
         height: 2.0,
         width: double.infinity,
-        child:
-            //!_isPaused
+        child: //!_isPaused
             CustomPaint(
           painter: _TimelinePainter(
             fillColor: widget.buttonData.timelineFillColor,
@@ -598,7 +607,7 @@ class _StoryTimelineState extends State<StoryTimeline> {
             thikness: widget.buttonData.timelineThikness,
           ),
         )
-        //: const SizedBox.shrink(),
+        // : const SizedBox.shrink(),
         );
   }
 }
