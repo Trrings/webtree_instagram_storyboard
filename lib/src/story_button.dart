@@ -328,9 +328,9 @@ class StoryButtonData {
     ),
     this.borderOffset = 2.0,
   }) : assert(
-       segmentDuration.first.inMilliseconds % kStoryTimerTickMillis == 0,
-       // &&
-              // segmentDuration.first.inMilliseconds >= 1000,
+       segmentDuration.first.inMilliseconds % kStoryTimerTickMillis == 0
+        &&
+               segmentDuration.first.inMilliseconds >= 1000,
           //'Segment duration in milliseconds must be a multiple of $kStoryTimerTickMillis and not less than 1000 milliseconds',
         );
 
