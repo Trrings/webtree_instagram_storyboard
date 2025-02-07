@@ -33,13 +33,96 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
   double _pageValue = 0.0;
   static const double bottomZoneHeight = 60.0; // Bottom 60 pixels area
 
+  // Add text editing controllers
+  late TextEditingController _replyController;
+  late FocusNode _replyFocusNode;
+
   @override
   void initState() {
+    super.initState();
     _storyController =
         widget.buttonData.storyController ?? StoryTimelineController();
     _stopwatch.start();
     _storyController.addListener(_onTimelineEvent);
-    super.initState();
+    // Initialize text controllers
+    _replyController = TextEditingController();
+    _replyFocusNode = FocusNode();
+    // Add focus listeners
+    _replyFocusNode.addListener(_onFocusChange);
+  }
+
+  void _onFocusChange() {
+    if (_replyFocusNode.hasFocus) {
+      _storyController.setTypingState(true);
+    } else {
+      _storyController.setTypingState(false);
+    }
+  }
+
+  Widget _buildReplyBar() {
+    return SizedBox(
+      width: double.infinity,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+        child: SizedBox(
+          height: 80,
+          width: double.infinity,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0, vertical: 8.0),
+                  child: TextFormField(
+                    controller: _replyController,
+                    focusNode: _replyFocusNode,
+                    onTap: () {
+                      _replyFocusNode.requestFocus();
+                      _storyController.setTypingState(true);
+                    },
+                    onChanged: (_) {
+                      _storyController.setTypingState(true);
+                    },
+                    onEditingComplete: () {
+                      _replyFocusNode.unfocus();
+                      _storyController.setTypingState(false);
+                    },
+                    style: const TextStyle(color: Colors.black),
+                    decoration: InputDecoration(
+                      hintText: 'Type your message...',
+                      hintStyle: const TextStyle(color: Colors.black54),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 65,
+                width: 65,
+                child: IconButton(
+                  icon: Icon(Icons.send, color: Colors.red.shade400),
+                  onPressed: () {
+                    _replyFocusNode.unfocus();
+                    _replyController.clear();
+                    _storyController.setTypingState(false);
+                  },
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -229,6 +312,12 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
             right: 0.0,
             child: _buildCloseButton(),
           ),
+          // Positioned(
+          //   bottom: 0.0,
+          //   left: 0.0,
+          //   right: 0.0,
+          //   child: _buildReplyBar(),
+          // ),
         ],
       ),
     );
@@ -319,6 +408,8 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
 
   @override
   void dispose() {
+    _replyController.dispose();
+    _replyFocusNode.dispose();
     widget.pageController?.removeListener(_onPageControllerUpdate);
     _stopwatch.stop();
     _storyController.removeListener(_onTimelineEvent);

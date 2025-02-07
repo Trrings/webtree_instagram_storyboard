@@ -62,27 +62,34 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                           child: TextFormField(
                             controller: replayController,
                             focusNode: focusNode,
+                            onTap: () {
+                              debugPrint(
+                                  "Text field tapped. Requesting focus explicitly.");
+                              Future.delayed(Duration(milliseconds: 100), () {
+                                focusNode
+                                    .requestFocus(); // Explicitly request focus
+                              });
+                              storyController
+                                  .setTypingState(true); // Pause all stories
+                            },
                             onChanged: (value) {
                               debugPrint("Typing in text field...");
                               storyController
-                                  .setTypingState(true); // ✅ Pause all stories
-                            },
-                            onTap: () {
-                              debugPrint("Text field tapped.");
-                              storyController
-                                  .setTypingState(true); // ✅ Pause all stories
+                                  .setTypingState(true); // Pause all stories
                             },
                             onTapOutside: (event) {
-                              debugPrint("Tapped outside.");
+                              debugPrint(
+                                  "Tapped outside. Unfocusing keyboard.");
                               focusNode.unfocus();
-                              storyController.setTypingState(
-                                  false); // ✅ Resume all stories
+                              storyController
+                                  .setTypingState(false); // Resume all stories
                             },
                             onEditingComplete: () {
-                              debugPrint("Editing complete.");
+                              debugPrint(
+                                  "Editing complete. Unfocusing keyboard.");
                               focusNode.unfocus();
-                              storyController.setTypingState(
-                                  false); // ✅ Resume all stories
+                              storyController
+                                  .setTypingState(false); // Resume all stories
                             },
                             style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
@@ -208,7 +215,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
     storyController.addListener(_onStoryEvent);
   }
 
-  void _onStoryEvent(event, storyId) {
+  void _onStoryEvent(StoryTimelineEvent event, String storyId) {
     debugPrint('Story Event: $event, Story ID: $storyId');
   }
 
@@ -218,15 +225,9 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
 
     Future.delayed(Duration(milliseconds: 300), () {
       if (mounted) {
-        focusNode.unfocus(); // Unfocus the keyboard when switching stories
+        //focusNode.unfocus(); // Unfocus the keyboard when switching stories
       }
     });
-  }
-
-  /// ✅ Reset `replayController` when switching stories
-  void _resetReplayController() {
-    replayController.dispose(); // Dispose old controller
-    replayController = TextEditingController(); // Create a new one
   }
 
   @override
