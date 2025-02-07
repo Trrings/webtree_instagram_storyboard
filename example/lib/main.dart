@@ -44,90 +44,90 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
     bool showReplyBar = false,
   }) {
     return StoryPageScaffold(
-      // bottomNavigationBar: addBottomBar
-      //     ? SizedBox(
-      //         width: double.infinity,
-      //         child: Padding(
-      //           padding:
-      //               const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
-      //           child: SizedBox(
-      //             height: 80,
-      //             width: double.infinity,
-      //             child: Row(
-      //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //               children: [
-      //                 Expanded(
-      //                   child: Padding(
-      //                     padding: const EdgeInsets.symmetric(
-      //                         horizontal: 8.0, vertical: 8.0),
-      //                     child: TextFormField(
-      //                       controller: replayController,
-      //                       focusNode: focusNode,
-      //                       onTap: () {
-      //                         debugPrint(
-      //                             "Text field tapped. Requesting focus explicitly.");
-      //                         Future.delayed(Duration(milliseconds: 100), () {
-      //                           focusNode
-      //                               .requestFocus(); // Explicitly request focus
-      //                         });
-      //                         storyController
-      //                             .setTypingState(true); // Pause all stories
-      //                       },
-      //                       onChanged: (value) {
-      //                         debugPrint("Typing in text field...");
-      //                         storyController
-      //                             .setTypingState(true); // Pause all stories
-      //                       },
-      //                       onTapOutside: (event) {
-      //                         debugPrint(
-      //                             "Tapped outside. Unfocusing keyboard.");
-      //                         focusNode.unfocus();
-      //                         storyController
-      //                             .setTypingState(false); // Resume all stories
-      //                       },
-      //                       onEditingComplete: () {
-      //                         debugPrint(
-      //                             "Editing complete. Unfocusing keyboard.");
-      //                         focusNode.unfocus();
-      //                         storyController
-      //                             .setTypingState(false); // Resume all stories
-      //                       },
-      //                       style: const TextStyle(color: Colors.black),
-      //                       decoration: InputDecoration(
-      //                         hintText: 'Type your message...',
-      //                         hintStyle: const TextStyle(color: Colors.black54),
-      //                         border: OutlineInputBorder(
-      //                           borderRadius: BorderRadius.circular(25.0),
-      //                           borderSide: BorderSide.none,
-      //                         ),
-      //                         filled: true,
-      //                         fillColor: Colors.grey[200],
-      //                         contentPadding: const EdgeInsets.symmetric(
-      //                             horizontal: 20, vertical: 10),
-      //                       ),
-      //                     ),
-      //                   ),
-      //                 ),
-      //                 SizedBox(
-      //                   height: 65,
-      //                   width: 65,
-      //                   child: IconButton(
-      //                     icon: Icon(Icons.send, color: Colors.red.shade400),
-      //                     onPressed: () {
-      //                       debugPrint("Message sent.");
-      //                       focusNode.unfocus();
-      //                       replayController.clear();
-      //                       storyController
-      //                           .setTypingState(false); // ✅ Resume all stories
-      //                     },
-      //                   ),
-      //                 )
-      //               ],
-      //             ),
-      //           ),
-      //         ),
-      //       )
-      //     : const SizedBox.shrink(),
+      bottomNavigationBar: addBottomBar
+          ? SizedBox(
+              width: double.infinity,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+                child: SizedBox(
+                  height: 80,
+                  width: double.infinity,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8.0, vertical: 8.0),
+                          child: TextFormField(
+                            controller: replayController,
+                            focusNode: focusNode,
+                            onTap: () {
+                              debugPrint(
+                                  "Text field tapped. Requesting focus explicitly.");
+                              Future.delayed(Duration(milliseconds: 100), () {
+                                focusNode
+                                    .requestFocus(); // Explicitly request focus
+                              });
+                              storyController
+                                  .setTypingState(true); // Pause all stories
+                            },
+                            onChanged: (value) {
+                              debugPrint("Typing in text field...");
+                              storyController
+                                  .setTypingState(true); // Pause all stories
+                            },
+                            onTapOutside: (event) {
+                              debugPrint(
+                                  "Tapped outside. Unfocusing keyboard.");
+                              focusNode.unfocus();
+                              storyController
+                                  .setTypingState(false); // Resume all stories
+                            },
+                            onEditingComplete: () {
+                              debugPrint(
+                                  "Editing complete. Unfocusing keyboard.");
+                              focusNode.unfocus();
+                              storyController
+                                  .setTypingState(false); // Resume all stories
+                            },
+                            style: const TextStyle(color: Colors.black),
+                            decoration: InputDecoration(
+                              hintText: 'Type your message...',
+                              hintStyle: const TextStyle(color: Colors.black54),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(25.0),
+                                borderSide: BorderSide.none,
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey[200],
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 10),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 65,
+                        width: 65,
+                        child: IconButton(
+                          icon: Icon(Icons.send, color: Colors.red.shade400),
+                          onPressed: () {
+                            debugPrint("Message sent.");
+                            focusNode.unfocus();
+                            replayController.clear();
+                            storyController
+                                .setTypingState(false); // ✅ Resume all stories
+                          },
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            )
+          : const SizedBox.shrink(),
       body: Container(
         width: double.infinity,
         height: double.infinity,

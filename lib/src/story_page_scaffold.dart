@@ -11,15 +11,17 @@ class StoryPageScaffold extends StatelessWidget {
   final Widget? bottomNavigationBar;
   final BorderRadius? borderRadius;
   final bool showReplyBar;
+  final Widget? replyBarWidget;
 
-  const StoryPageScaffold(
-      {Key? key,
-      this.appBar,
-      required this.body,
-      this.bottomNavigationBar,
-      this.borderRadius,
-      this.showReplyBar = false})
-      : super(key: key);
+  const StoryPageScaffold({
+    Key? key,
+    this.appBar,
+    required this.body,
+    this.bottomNavigationBar,
+    this.borderRadius,
+    this.showReplyBar = false,
+    this.replyBarWidget,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,12 +46,13 @@ class StoryPageScaffold extends StatelessWidget {
                   isReversed: true,
                 ),
               ),
-              if (showReplyBar)
+              if (showReplyBar &&
+                  replyBarWidget != null) // ✅ Use external reply bar
                 Positioned(
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  child: _buildReplyBar(),
+                  child: replyBarWidget!,
                 ),
             ],
           ),
