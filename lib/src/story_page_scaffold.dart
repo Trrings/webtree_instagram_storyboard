@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 /// have to use this scaffold. You can use your own page structure
 /// but if you're ok with this, feel free to use it as a base for
 /// your story pages
-class StoryPageScaffold extends StatelessWidget {
+class StoryPageScaffold extends StatefulWidget {
   final PreferredSizeWidget? appBar;
   final Widget body;
   final Widget? bottomNavigationBar;
@@ -24,20 +24,22 @@ class StoryPageScaffold extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _StoryPageScaffoldState createState() => _StoryPageScaffoldState();
+}
+
+class _StoryPageScaffoldState extends State<StoryPageScaffold> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: appBar,
+      appBar: widget.appBar,
       backgroundColor: Colors.transparent,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ClipRRect(
-          borderRadius: borderRadius ??
-              BorderRadius.circular(
-                12.0,
-              ),
+          borderRadius: widget.borderRadius ?? BorderRadius.circular(12.0),
           child: Stack(
             children: [
-              body,
+              widget.body,
               IgnorePointer(
                 child: GradientTransition(
                   width: double.infinity,
@@ -46,71 +48,18 @@ class StoryPageScaffold extends StatelessWidget {
                   isReversed: true,
                 ),
               ),
-              if (showReplyBar &&
-                  replyBarWidget != null) // ✅ Use external reply bar
+              if (widget.showReplyBar && widget.replyBarWidget != null)
                 Positioned(
                   bottom: 0,
                   left: 0,
                   right: 0,
-                  child: replyBarWidget!,
+                  child: widget.replyBarWidget!,
                 ),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: bottomNavigationBar,
-    );
-  }
-
-  // Reply Bar Widget
-  Widget _buildReplyBar() {
-    return SizedBox(
-      width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
-        child: SizedBox(
-          height: 80,
-          width: double.infinity,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 8.0),
-                  child: TextFormField(
-                    style: const TextStyle(color: Colors.black),
-                    decoration: InputDecoration(
-                      hintText: 'Type your message...',
-                      hintStyle: const TextStyle(color: Colors.black54),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25.0),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 10,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 65,
-                width: 65,
-                child: IconButton(
-                  icon: Icon(Icons.send, color: Colors.red.shade400),
-                  onPressed: () {
-                    // Send button action
-                  },
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
+      bottomNavigationBar: widget.bottomNavigationBar,
     );
   }
 }
