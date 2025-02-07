@@ -44,7 +44,7 @@ class StoryPageScaffold extends StatelessWidget {
                   isReversed: true,
                 ),
               ),
-              if (showReplyBar) // ✅ Conditionally show reply bar
+              if (showReplyBar)
                 Positioned(
                   bottom: 0,
                   left: 0,
