@@ -5,13 +5,11 @@ import 'package:flutter/material.dart';
 /// have to use this scaffold. You can use your own page structure
 /// but if you're ok with this, feel free to use it as a base for
 /// your story pages
-class StoryPageScaffold extends StatefulWidget {
+class StoryPageScaffold extends StatelessWidget {
   final PreferredSizeWidget? appBar;
   final Widget body;
   final Widget? bottomNavigationBar;
   final BorderRadius? borderRadius;
-  final bool showReplyBar;
-  final Widget? replyBarWidget;
 
   const StoryPageScaffold({
     Key? key,
@@ -19,27 +17,23 @@ class StoryPageScaffold extends StatefulWidget {
     required this.body,
     this.bottomNavigationBar,
     this.borderRadius,
-    this.showReplyBar = false,
-    this.replyBarWidget,
   }) : super(key: key);
 
   @override
-  _StoryPageScaffoldState createState() => _StoryPageScaffoldState();
-}
-
-class _StoryPageScaffoldState extends State<StoryPageScaffold> {
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: widget.appBar,
+      appBar: appBar,
       backgroundColor: Colors.transparent,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: ClipRRect(
-          borderRadius: widget.borderRadius ?? BorderRadius.circular(12.0),
+          borderRadius: borderRadius ??
+              BorderRadius.circular(
+                12.0,
+              ),
           child: Stack(
             children: [
-              widget.body,
+              body,
               IgnorePointer(
                 child: GradientTransition(
                   width: double.infinity,
@@ -48,18 +42,11 @@ class _StoryPageScaffoldState extends State<StoryPageScaffold> {
                   isReversed: true,
                 ),
               ),
-              if (widget.showReplyBar && widget.replyBarWidget != null)
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: widget.replyBarWidget!,
-                ),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: widget.bottomNavigationBar,
+      bottomNavigationBar: bottomNavigationBar,
     );
   }
 }

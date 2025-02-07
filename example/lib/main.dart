@@ -41,93 +41,92 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
     required String text,
     required String imageName,
     bool addBottomBar = true,
-    bool showReplyBar = false,
   }) {
     return StoryPageScaffold(
-      bottomNavigationBar: addBottomBar
-          ? SizedBox(
-              width: double.infinity,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
-                child: SizedBox(
-                  height: 80,
-                  width: double.infinity,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8.0, vertical: 8.0),
-                          child: TextFormField(
-                            controller: replayController,
-                            focusNode: focusNode,
-                            onTap: () {
-                              debugPrint(
-                                  "Text field tapped. Requesting focus explicitly.");
-                              Future.delayed(Duration(milliseconds: 100), () {
-                                focusNode
-                                    .requestFocus(); // Explicitly request focus
-                              });
-                              storyController
-                                  .setTypingState(true); // Pause all stories
-                            },
-                            onChanged: (value) {
-                              debugPrint("Typing in text field...");
-                              storyController
-                                  .setTypingState(true); // Pause all stories
-                            },
-                            onTapOutside: (event) {
-                              debugPrint(
-                                  "Tapped outside. Unfocusing keyboard.");
-                              focusNode.unfocus();
-                              storyController
-                                  .setTypingState(false); // Resume all stories
-                            },
-                            onEditingComplete: () {
-                              debugPrint(
-                                  "Editing complete. Unfocusing keyboard.");
-                              focusNode.unfocus();
-                              storyController
-                                  .setTypingState(false); // Resume all stories
-                            },
-                            style: const TextStyle(color: Colors.black),
-                            decoration: InputDecoration(
-                              hintText: 'Type your message...',
-                              hintStyle: const TextStyle(color: Colors.black54),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(25.0),
-                                borderSide: BorderSide.none,
-                              ),
-                              filled: true,
-                              fillColor: Colors.grey[200],
-                              contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 10),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(
-                        height: 65,
-                        width: 65,
-                        child: IconButton(
-                          icon: Icon(Icons.send, color: Colors.red.shade400),
-                          onPressed: () {
-                            debugPrint("Message sent.");
-                            focusNode.unfocus();
-                            replayController.clear();
-                            storyController
-                                .setTypingState(false); // ✅ Resume all stories
-                          },
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-              ),
-            )
-          : const SizedBox.shrink(),
+      // bottomNavigationBar: addBottomBar
+      //     ? SizedBox(
+      //         width: double.infinity,
+      //         child: Padding(
+      //           padding:
+      //               const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+      //           child: SizedBox(
+      //             height: 80,
+      //             width: double.infinity,
+      //             child: Row(
+      //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      //               children: [
+      //                 Expanded(
+      //                   child: Padding(
+      //                     padding: const EdgeInsets.symmetric(
+      //                         horizontal: 8.0, vertical: 8.0),
+      //                     child: TextFormField(
+      //                       controller: replayController,
+      //                       focusNode: focusNode,
+      //                       onTap: () {
+      //                         debugPrint(
+      //                             "Text field tapped. Requesting focus explicitly.");
+      //                         Future.delayed(Duration(milliseconds: 100), () {
+      //                           focusNode
+      //                               .requestFocus(); // Explicitly request focus
+      //                         });
+      //                         storyController
+      //                             .setTypingState(true); // Pause all stories
+      //                       },
+      //                       onChanged: (value) {
+      //                         debugPrint("Typing in text field...");
+      //                         storyController
+      //                             .setTypingState(true); // Pause all stories
+      //                       },
+      //                       onTapOutside: (event) {
+      //                         debugPrint(
+      //                             "Tapped outside. Unfocusing keyboard.");
+      //                         focusNode.unfocus();
+      //                         storyController
+      //                             .setTypingState(false); // Resume all stories
+      //                       },
+      //                       onEditingComplete: () {
+      //                         debugPrint(
+      //                             "Editing complete. Unfocusing keyboard.");
+      //                         focusNode.unfocus();
+      //                         storyController
+      //                             .setTypingState(false); // Resume all stories
+      //                       },
+      //                       style: const TextStyle(color: Colors.black),
+      //                       decoration: InputDecoration(
+      //                         hintText: 'Type your message...',
+      //                         hintStyle: const TextStyle(color: Colors.black54),
+      //                         border: OutlineInputBorder(
+      //                           borderRadius: BorderRadius.circular(25.0),
+      //                           borderSide: BorderSide.none,
+      //                         ),
+      //                         filled: true,
+      //                         fillColor: Colors.grey[200],
+      //                         contentPadding: const EdgeInsets.symmetric(
+      //                             horizontal: 20, vertical: 10),
+      //                       ),
+      //                     ),
+      //                   ),
+      //                 ),
+      //                 SizedBox(
+      //                   height: 65,
+      //                   width: 65,
+      //                   child: IconButton(
+      //                     icon: Icon(Icons.send, color: Colors.red.shade400),
+      //                     onPressed: () {
+      //                       debugPrint("Message sent.");
+      //                       focusNode.unfocus();
+      //                       replayController.clear();
+      //                       storyController
+      //                           .setTypingState(false); // ✅ Resume all stories
+      //                     },
+      //                   ),
+      //                 )
+      //               ],
+      //             ),
+      //           ),
+      //         ),
+      //       )
+      //     : const SizedBox.shrink(),
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -155,7 +154,6 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
           ),
         ),
       ),
-      showReplyBar: showReplyBar,
     );
   }
 
@@ -264,15 +262,15 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 borderDecoration: _buildBorderDecoration(Colors.red),
                 storyPages: [
                   _createDummyPage(
-                      text:
-                          'Want to buy a new car? Get our loan for the rest of your life!',
-                      imageName: 'car',
-                      showReplyBar: true),
+                    text:
+                        'Want to buy a new car? Get our loan for the rest of your life!',
+                    imageName: 'car',
+                  ),
                   _createDummyPage(
-                      text:
-                          'Can\'t return the loan? Don\'t worry, we\'ll take your soul as a collateral ;-)',
-                      imageName: 'car',
-                      showReplyBar: true),
+                    text:
+                        'Can\'t return the loan? Don\'t worry, we\'ll take your soul as a collateral ;-)',
+                    imageName: 'car',
+                  ),
                 ],
                 segmentDuration: [
                   const Duration(seconds: 15),
@@ -291,18 +289,17 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                   _createDummyPage(
                     text: 'Get a loan',
                     imageName: 'travel_1',
-                    showReplyBar: true,
                   ),
                   _createDummyPage(
-                      text: 'Select a place where you want to go',
-                      imageName: 'travel_2',
-                      //addBottomBar: false,
-                      showReplyBar: true),
+                    text: 'Select a place where you want to go',
+                    imageName: 'travel_2',
+                    //addBottomBar: false,
+                  ),
                   _createDummyPage(
-                      text: 'Dream about the place and pay our interest',
-                      imageName: 'travel_3',
-                      //addBottomBar: false,
-                      showReplyBar: true),
+                    text: 'Dream about the place and pay our interest',
+                    imageName: 'travel_3',
+                    //addBottomBar: false,
+                  ),
                 ],
                 segmentDuration: [
                   const Duration(seconds: 3),
@@ -319,9 +316,9 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 child: _buildButtonChild('Buy a house anywhere'),
                 storyPages: [
                   _createDummyPage(
-                      text: 'You cannot buy a house. Live with it',
-                      imageName: 'house',
-                      showReplyBar: true),
+                    text: 'You cannot buy a house. Live with it',
+                    imageName: 'house',
+                  ),
                 ],
                 segmentDuration: [const Duration(seconds: 5)],
               ),
@@ -334,15 +331,15 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 borderDecoration: _buildBorderDecoration(Colors.red),
                 storyPages: [
                   _createDummyPage(
-                      text:
-                          'Want to buy a new car? Get our loan for the rest of your life!',
-                      imageName: 'car',
-                      showReplyBar: true),
+                    text:
+                        'Want to buy a new car? Get our loan for the rest of your life!',
+                    imageName: 'car',
+                  ),
                   _createDummyPage(
-                      text:
-                          'Can\'t return the loan? Don\'t worry, we\'ll take your soul as a collateral ;-)',
-                      imageName: 'car',
-                      showReplyBar: true),
+                    text:
+                        'Can\'t return the loan? Don\'t worry, we\'ll take your soul as a collateral ;-)',
+                    imageName: 'car',
+                  ),
                 ],
                 segmentDuration: [
                   const Duration(seconds: 3),
@@ -358,23 +355,20 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 child: _buildButtonChild('Travel whereever'),
                 storyPages: [
                   _createDummyPage(
-                      text: 'Get a loan',
-                      imageName: 'travel_1',
-                      showReplyBar: true
-                      //addBottomBar: false,
-                      ),
+                    text: 'Get a loan',
+                    imageName: 'travel_1',
+                    //addBottomBar: false,
+                  ),
                   _createDummyPage(
-                      text: 'Select a place where you want to go',
-                      imageName: 'travel_2',
-                      showReplyBar: true
-                      //addBottomBar: false,
-                      ),
+                    text: 'Select a place where you want to go',
+                    imageName: 'travel_2',
+                    //addBottomBar: false,
+                  ),
                   _createDummyPage(
-                      text: 'Dream about the place and pay our interest',
-                      imageName: 'travel_3',
-                      showReplyBar: true
-                      //addBottomBar: false,
-                      ),
+                    text: 'Dream about the place and pay our interest',
+                    imageName: 'travel_3',
+                    //addBottomBar: false,
+                  ),
                 ],
                 segmentDuration: [
                   const Duration(seconds: 3),
@@ -393,9 +387,9 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 child: _buildButtonChild('Buy a house anywhere'),
                 storyPages: [
                   _createDummyPage(
-                      text: 'You cannot buy a house. Live with it',
-                      imageName: 'house',
-                      showReplyBar: true),
+                    text: 'You cannot buy a house. Live with it',
+                    imageName: 'house',
+                  ),
                 ],
                 segmentDuration: [
                   const Duration(seconds: 5),

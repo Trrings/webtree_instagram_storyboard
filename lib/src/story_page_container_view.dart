@@ -59,72 +59,6 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
     }
   }
 
-  Widget _buildReplyBar() {
-    return SizedBox(
-      width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
-        child: SizedBox(
-          height: 80,
-          width: double.infinity,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 8.0, vertical: 8.0),
-                  child: TextFormField(
-                    controller: _replyController,
-                    focusNode: _replyFocusNode,
-                    onTap: () {
-                      _replyFocusNode.requestFocus();
-                      _storyController.setTypingState(true);
-                    },
-                    onChanged: (_) {
-                      _storyController.setTypingState(true);
-                    },
-                    onEditingComplete: () {
-                      _replyFocusNode.unfocus();
-                      _storyController.setTypingState(false);
-                    },
-                    style: const TextStyle(color: Colors.black),
-                    decoration: InputDecoration(
-                      hintText: 'Type your message...',
-                      hintStyle: const TextStyle(color: Colors.black54),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(25.0),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 20,
-                        vertical: 10,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 65,
-                width: 65,
-                child: IconButton(
-                  icon: Icon(Icons.send, color: Colors.red.shade400),
-                  onPressed: () {
-                    _replyFocusNode.unfocus();
-                    _replyController.clear();
-                    _storyController.setTypingState(false);
-                  },
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   void didFirstBuildFinish(BuildContext context) {
     widget.pageController?.addListener(_onPageControllerUpdate);
@@ -228,12 +162,9 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
   Widget _buildPageContent() {
     if (widget.buttonData.storyPages.isEmpty) {
       return Container(
-        color: Colors.black,
+        color: Colors.orange,
         child: const Center(
-          child: Text('Loading...',
-          style: TextStyle(color: Colors.white,
-          fontSize: 14,
-          ),),
+          child: Text('No pages'),
         ),
       );
     }
@@ -312,12 +243,12 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
             right: 0.0,
             child: _buildCloseButton(),
           ),
-          // Positioned(
-          //   bottom: 0.0,
-          //   left: 0.0,
-          //   right: 0.0,
-          //   child: _buildReplyBar(),
-          // ),
+          Positioned(
+            bottom: 0.0,
+            left: 0.0,
+            right: 0.0,
+            child: widget.buttonData.replayBar!,
+          ),
         ],
       ),
     );

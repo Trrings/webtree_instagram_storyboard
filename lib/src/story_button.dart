@@ -241,6 +241,7 @@ class StoryButtonData {
   final Widget child;
   final List<Widget> storyPages;
   final Widget? closeButton;
+  final Widget? replayBar;
   final Positioned? addStoryWidget;
   final List<Duration> segmentDuration;
   final BoxDecoration containerBackgroundDecoration;
@@ -302,6 +303,7 @@ class StoryButtonData {
     this.defaultCloseButtonColor = Colors.white,
     this.timelineBackgroundColor = const Color.fromARGB(255, 200, 200, 200),
     this.closeButton,
+    this.replayBar,
     required this.storyPages,
     required this.child,
     required this.storyId,
@@ -328,7 +330,7 @@ class StoryButtonData {
     ),
     this.borderOffset = 2.0,
   }) : assert(
-  segmentDuration.first.inMilliseconds % kStoryTimerTickMillis == 0 &&
+          segmentDuration.first.inMilliseconds % kStoryTimerTickMillis == 0 &&
               segmentDuration.first.inMilliseconds >= 1000,
           'Segment duration in milliseconds must be a multiple of $kStoryTimerTickMillis and not less than 1000 milliseconds',
         );
