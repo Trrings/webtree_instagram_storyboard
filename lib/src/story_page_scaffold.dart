@@ -10,14 +10,16 @@ class StoryPageScaffold extends StatelessWidget {
   final Widget body;
   final Widget? bottomNavigationBar;
   final BorderRadius? borderRadius;
+  final bool showReplyBar;
 
-  const StoryPageScaffold({
-    Key? key,
-    this.appBar,
-    required this.body,
-    this.bottomNavigationBar,
-    this.borderRadius,
-  }) : super(key: key);
+  const StoryPageScaffold(
+      {Key? key,
+      this.appBar,
+      required this.body,
+      this.bottomNavigationBar,
+      this.borderRadius,
+      this.showReplyBar = false})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -42,11 +44,70 @@ class StoryPageScaffold extends StatelessWidget {
                   isReversed: true,
                 ),
               ),
+              if (showReplyBar) // ✅ Conditionally show reply bar
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: _buildReplyBar(),
+                ),
             ],
           ),
         ),
       ),
       bottomNavigationBar: bottomNavigationBar,
+    );
+  }
+
+  // Reply Bar Widget
+  Widget _buildReplyBar() {
+    return SizedBox(
+      width: double.infinity,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+        child: SizedBox(
+          height: 80,
+          width: double.infinity,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0, vertical: 8.0),
+                  child: TextFormField(
+                    style: const TextStyle(color: Colors.black),
+                    decoration: InputDecoration(
+                      hintText: 'Type your message...',
+                      hintStyle: const TextStyle(color: Colors.black54),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 65,
+                width: 65,
+                child: IconButton(
+                  icon: Icon(Icons.send, color: Colors.red.shade400),
+                  onPressed: () {
+                    // Send button action
+                  },
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
