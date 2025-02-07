@@ -247,7 +247,7 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
             bottom: 0.0,
             left: 0.0,
             right: 0.0,
-            child: widget.buttonData.replayBar!,
+            child: widget.buttonData.replayBar ?? SizedBox.shrink(),
           ),
         ],
       ),

@@ -260,6 +260,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 child: _buildButtonChild('Want a new car?'),
 
                 borderDecoration: _buildBorderDecoration(Colors.red),
+                replayBar: _buildReplyBar(),
                 storyPages: [
                   _createDummyPage(
                     text:
@@ -285,6 +286,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 borderDecoration: _buildBorderDecoration(
                     const Color.fromARGB(255, 134, 119, 95)),
                 child: _buildButtonChild('Travel whereever'),
+                replayBar: _buildReplyBar(),
                 storyPages: [
                   _createDummyPage(
                     text: 'Get a loan',
@@ -314,6 +316,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 borderDecoration: _buildBorderDecoration(Colors.orange),
                 buttonDecoration: _buildButtonDecoration('house'),
                 child: _buildButtonChild('Buy a house anywhere'),
+                replayBar: _buildReplyBar(),
                 storyPages: [
                   _createDummyPage(
                     text: 'You cannot buy a house. Live with it',
@@ -329,6 +332,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 buttonDecoration: _buildButtonDecoration('car'),
                 child: _buildButtonChild('Want a new car?'),
                 borderDecoration: _buildBorderDecoration(Colors.red),
+                replayBar: _buildReplyBar(),
                 storyPages: [
                   _createDummyPage(
                     text:
@@ -353,6 +357,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 borderDecoration: _buildBorderDecoration(
                     const Color.fromARGB(255, 134, 119, 95)),
                 child: _buildButtonChild('Travel whereever'),
+                replayBar: _buildReplyBar(),
                 storyPages: [
                   _createDummyPage(
                     text: 'Get a loan',
@@ -385,6 +390,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 borderDecoration: _buildBorderDecoration(Colors.orange),
                 buttonDecoration: _buildButtonDecoration('house'),
                 child: _buildButtonChild('Buy a house anywhere'),
+                replayBar: _buildReplyBar(),
                 storyPages: [
                   _createDummyPage(
                     text: 'You cannot buy a house. Live with it',
@@ -398,6 +404,58 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  // Reply Bar Widget
+  Widget _buildReplyBar() {
+    return SizedBox(
+      width: double.infinity,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
+        child: SizedBox(
+          height: 80,
+          width: double.infinity,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8.0, vertical: 8.0),
+                  child: TextFormField(
+                    style: const TextStyle(color: Colors.black),
+                    decoration: InputDecoration(
+                      hintText: 'Type your message...',
+                      hintStyle: const TextStyle(color: Colors.black54),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey[200],
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 10,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 65,
+                width: 65,
+                child: IconButton(
+                  icon: Icon(Icons.send, color: Colors.red.shade400),
+                  onPressed: () {
+                    // Send button action
+                  },
+                ),
+              )
+            ],
+          ),
+        ),
       ),
     );
   }
