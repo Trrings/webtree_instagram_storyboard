@@ -243,12 +243,6 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
             right: 0.0,
             child: _buildCloseButton(),
           ),
-          Positioned(
-            bottom: 0.0,
-            left: 0.0,
-            right: 0.0,
-            child: widget.buttonData.replayBar ?? SizedBox.shrink(),
-          ),
         ],
       ),
     );

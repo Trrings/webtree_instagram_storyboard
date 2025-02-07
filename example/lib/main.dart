@@ -40,7 +40,6 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
   Widget _createDummyPage({
     required String text,
     required String imageName,
-    bool addBottomBar = true,
   }) {
     return StoryPageScaffold(
       // bottomNavigationBar: addBottomBar

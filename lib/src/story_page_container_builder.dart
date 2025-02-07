@@ -203,27 +203,41 @@ class _StoryPageContainerBuilderState extends State<StoryPageContainerBuilder>
                 child: SafeArea(
                   bottom: widget.settings.safeAreaBottom,
                   top: widget.settings.safeAreaTop,
-                  child: PageView.builder(
-                    physics: _storyPageTransform.pageScrollPhysics,
-                    controller: _pageController,
-                    itemBuilder: ((context, index) {
-                      final childIndex = index % itemCount;
-                      final buttonData = widget.settings.allButtonDatas[childIndex];
-                      final child = StoryPageContainerView(
-                        buttonData: buttonData,
-                        onClosePressed: _close,
-                        pageController: _pageController,
-                        onStoryComplete: _onStoryComplete,
-                      );
-                      return _storyPageTransform.transform(
-                        context,
-                        child,
-                        childIndex,
-                        _currentPage,
-                        _pageDelta,
-                      );
-                    }),
-                    itemCount: itemCount,
+                  child: Stack(
+                    children: [
+                      PageView.builder(
+                        physics: _storyPageTransform.pageScrollPhysics,
+                        controller: _pageController,
+                        itemBuilder: ((context, index) {
+                          final childIndex = index % itemCount;
+                          final buttonData =
+                              widget.settings.allButtonDatas[childIndex];
+                          final child = StoryPageContainerView(
+                            buttonData: buttonData,
+                            onClosePressed: _close,
+                            pageController: _pageController,
+                            onStoryComplete: _onStoryComplete,
+                          );
+                          return _storyPageTransform.transform(
+                            context,
+                            child,
+                            childIndex,
+                            _currentPage,
+                            _pageDelta,
+                          );
+                        }),
+                        itemCount: itemCount,
+                      ),
+
+                      // 🔹 Replay Bar Positioned at the Bottom
+                      Positioned(
+                        bottom: 0.0,
+                        left: 0.0,
+                        right: 0.0,
+                        child: widget.settings.buttonData.replayBar ??
+                            SizedBox.shrink(),
+                      ),
+                    ],
                   ),
                 ),
               ),
