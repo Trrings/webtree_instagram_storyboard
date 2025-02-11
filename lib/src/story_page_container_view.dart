@@ -436,7 +436,7 @@ class StoryTimelineController {
     }
   }
 
-  bool isTypingState() {
+  bool get getTypingState {
    return isTyping;
   }
 
