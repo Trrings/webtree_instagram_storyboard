@@ -511,6 +511,10 @@ class StoryTimelineController {
     }
   }
 
+  bool isTypingState() {
+   return isTyping;
+  }
+
   void dispose() {
     _listeners.clear();
   }
