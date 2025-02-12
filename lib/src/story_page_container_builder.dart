@@ -229,7 +229,10 @@ class _StoryPageContainerBuilderState extends State<StoryPageContainerBuilder>
                             bottom: 0.0,
                             left: 0.0,
                             right: 0.0,
-                            child: buttonData.replayBar ?? const SizedBox.shrink(),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: buttonData.replayBar!,
+                            ),
                           ),
                         ],
                       );

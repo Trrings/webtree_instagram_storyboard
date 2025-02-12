@@ -241,7 +241,7 @@ class StoryButtonData {
   final Widget child;
   final List<Widget> storyPages;
   final Widget? closeButton;
-  final Widget? replayBar;
+  final List<Widget>? replayBar;
   final Positioned? addStoryWidget;
   final List<Duration> segmentDuration;
   final BoxDecoration containerBackgroundDecoration;

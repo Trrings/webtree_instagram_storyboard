@@ -259,7 +259,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 child: _buildButtonChild('Want a new car?'),
 
                 borderDecoration: _buildBorderDecoration(Colors.red),
-                replayBar: _buildReplyBar(),
+
                 storyPages: [
                   _createDummyPage(
                     text:
@@ -272,6 +272,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                     imageName: 'car',
                   ),
                 ],
+                replayBar: [_buildReplyBar()],
                 segmentDuration: [
                   const Duration(seconds: 15),
                   const Duration(seconds: 3)
@@ -285,7 +286,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 borderDecoration: _buildBorderDecoration(
                     const Color.fromARGB(255, 134, 119, 95)),
                 child: _buildButtonChild('Travel whereever'),
-                replayBar: _buildReplyBar(),
+                replayBar: [_buildReplyBar()],
                 storyPages: [
                   _createDummyPage(
                     text: 'Get a loan',
@@ -315,7 +316,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 borderDecoration: _buildBorderDecoration(Colors.orange),
                 buttonDecoration: _buildButtonDecoration('house'),
                 child: _buildButtonChild('Buy a house anywhere'),
-                replayBar: _buildReplyBar(),
+                replayBar: [_buildReplyBar()],
                 storyPages: [
                   _createDummyPage(
                     text: 'You cannot buy a house. Live with it',
@@ -331,7 +332,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 buttonDecoration: _buildButtonDecoration('car'),
                 child: _buildButtonChild('Want a new car?'),
                 borderDecoration: _buildBorderDecoration(Colors.red),
-                replayBar: _buildReplyBar(),
+                replayBar: [_buildReplyBar()],
                 storyPages: [
                   _createDummyPage(
                     text:
@@ -356,7 +357,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 borderDecoration: _buildBorderDecoration(
                     const Color.fromARGB(255, 134, 119, 95)),
                 child: _buildButtonChild('Travel whereever'),
-                replayBar: _buildReplyBar(),
+                replayBar: [_buildReplyBar()],
                 storyPages: [
                   _createDummyPage(
                     text: 'Get a loan',
@@ -389,7 +390,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                 borderDecoration: _buildBorderDecoration(Colors.orange),
                 buttonDecoration: _buildButtonDecoration('house'),
                 child: _buildButtonChild('Buy a house anywhere'),
-                replayBar: _buildReplyBar(),
+                replayBar: [_buildReplyBar()],
                 storyPages: [
                   _createDummyPage(
                     text: 'You cannot buy a house. Live with it',
