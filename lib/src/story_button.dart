@@ -122,7 +122,9 @@ class _StoryButtonState extends State<StoryButton>
         AspectRatio(
           aspectRatio: widget.buttonData.aspectRatio,
           child: Container(
-            decoration: widget.buttonData._isWatched ? null : widget.buttonData.borderDecoration,
+            decoration: widget.buttonData._isWatched
+                ? null
+                : widget.buttonData.borderDecoration,
             child: Padding(
               padding: EdgeInsets.all(
                 widget.buttonData.borderOffset,
@@ -130,7 +132,9 @@ class _StoryButtonState extends State<StoryButton>
               child: Stack(
                 children: [
                   ClipRRect(
-                    borderRadius: widget.buttonData.buttonDecoration.borderRadius?.resolve(
+                    borderRadius: widget
+                            .buttonData.buttonDecoration.borderRadius
+                            ?.resolve(
                           null,
                         ) ??
                         const BorderRadius.all(
@@ -147,9 +151,15 @@ class _StoryButtonState extends State<StoryButton>
                           color: Colors.transparent,
                           child: InkWell(
                             splashColor: widget.buttonData.splashColor,
-                            splashFactory: widget.buttonData.inkFeatureFactory ?? InkRipple.splashFactory,
-                            onTap: widget.buttonData.showAddButton ? widget.buttonData.onAddStoryPressed : _onTap,
-                            onLongPress: !widget.buttonData.showAddButton ? null : _onTap,
+                            splashFactory:
+                                widget.buttonData.inkFeatureFactory ??
+                                    InkRipple.splashFactory,
+                            onTap: widget.buttonData.showAddButton
+                                ? widget.buttonData.onAddStoryPressed
+                                : _onTap,
+                            onLongPress: !widget.buttonData.showAddButton
+                                ? null
+                                : _onTap,
                             child: const SizedBox(
                               width: double.infinity,
                               height: double.infinity,
@@ -168,11 +178,16 @@ class _StoryButtonState extends State<StoryButton>
                                 onTap: widget.buttonData.onAddStoryPressed,
                                 child: DashedCircle(
                                   child: Container(
-                                    decoration: BoxDecoration(shape: BoxShape.circle),
-                                    padding: widget.buttonData.addStoryButtonPadding ?? EdgeInsets.all(3.0),
+                                    decoration:
+                                        BoxDecoration(shape: BoxShape.circle),
+                                    padding: widget
+                                            .buttonData.addStoryButtonPadding ??
+                                        EdgeInsets.all(3.0),
                                     child: Icon(
                                       Icons.add,
-                                      size: widget.buttonData.addStoryButtonSize ?? 24,
+                                      size: widget
+                                              .buttonData.addStoryButtonSize ??
+                                          24,
                                       color: Color(0xFF4D5761),
                                     ),
                                   ),
@@ -196,7 +211,7 @@ class _StoryButtonState extends State<StoryButton>
   }
 }
 
-const int kStoryTimerTickMillis =50;
+const int kStoryTimerTickMillis = 50;
 
 enum StoryWatchedContract {
   onStoryStart,
@@ -241,7 +256,6 @@ class StoryButtonData {
   final Widget child;
   final List<Widget> storyPages;
   final Widget? closeButton;
-  final List<Widget>? replayBar;
   final Positioned? addStoryWidget;
   final List<Duration> segmentDuration;
   final BoxDecoration containerBackgroundDecoration;
@@ -303,7 +317,6 @@ class StoryButtonData {
     this.defaultCloseButtonColor = Colors.white,
     this.timelineBackgroundColor = const Color.fromARGB(255, 200, 200, 200),
     this.closeButton,
-    this.replayBar,
     required this.storyPages,
     required this.child,
     required this.storyId,
@@ -334,10 +347,6 @@ class StoryButtonData {
               segmentDuration.first.inMilliseconds >= 1000,
           'Segment duration in milliseconds must be a multiple of $kStoryTimerTickMillis and not less than 1000 milliseconds',
         );
-
-
-
-
 }
 
 abstract class IWatchMarkable {
