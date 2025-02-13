@@ -34,98 +34,14 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
   static const double _borderRadius = 100.0;
   final StoryTimelineController storyController = StoryTimelineController();
 
-  TextEditingController replayController = TextEditingController();
-  final focusNode = FocusNode();
+  final TextEditingController replayController = TextEditingController();
+  final FocusNode focusNode = FocusNode();
 
   Widget _createDummyPage({
     required String text,
     required String imageName,
   }) {
     return StoryPageScaffold(
-      // bottomNavigationBar: addBottomBar
-      //     ? SizedBox(
-      //         width: double.infinity,
-      //         child: Padding(
-      //           padding:
-      //               const EdgeInsets.symmetric(vertical: 8.0, horizontal: 20.0),
-      //           child: SizedBox(
-      //             height: 80,
-      //             width: double.infinity,
-      //             child: Row(
-      //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //               children: [
-      //                 Expanded(
-      //                   child: Padding(
-      //                     padding: const EdgeInsets.symmetric(
-      //                         horizontal: 8.0, vertical: 8.0),
-      //                     child: TextFormField(
-      //                       controller: replayController,
-      //                       focusNode: focusNode,
-      //                       onTap: () {
-      //                         debugPrint(
-      //                             "Text field tapped. Requesting focus explicitly.");
-      //                         Future.delayed(Duration(milliseconds: 100), () {
-      //                           focusNode
-      //                               .requestFocus(); // Explicitly request focus
-      //                         });
-      //                         storyController
-      //                             .setTypingState(true); // Pause all stories
-      //                       },
-      //                       onChanged: (value) {
-      //                         debugPrint("Typing in text field...");
-      //                         storyController
-      //                             .setTypingState(true); // Pause all stories
-      //                       },
-      //                       onTapOutside: (event) {
-      //                         debugPrint(
-      //                             "Tapped outside. Unfocusing keyboard.");
-      //                         focusNode.unfocus();
-      //                         storyController
-      //                             .setTypingState(false); // Resume all stories
-      //                       },
-      //                       onEditingComplete: () {
-      //                         debugPrint(
-      //                             "Editing complete. Unfocusing keyboard.");
-      //                         focusNode.unfocus();
-      //                         storyController
-      //                             .setTypingState(false); // Resume all stories
-      //                       },
-      //                       style: const TextStyle(color: Colors.black),
-      //                       decoration: InputDecoration(
-      //                         hintText: 'Type your message...',
-      //                         hintStyle: const TextStyle(color: Colors.black54),
-      //                         border: OutlineInputBorder(
-      //                           borderRadius: BorderRadius.circular(25.0),
-      //                           borderSide: BorderSide.none,
-      //                         ),
-      //                         filled: true,
-      //                         fillColor: Colors.grey[200],
-      //                         contentPadding: const EdgeInsets.symmetric(
-      //                             horizontal: 20, vertical: 10),
-      //                       ),
-      //                     ),
-      //                   ),
-      //                 ),
-      //                 SizedBox(
-      //                   height: 65,
-      //                   width: 65,
-      //                   child: IconButton(
-      //                     icon: Icon(Icons.send, color: Colors.red.shade400),
-      //                     onPressed: () {
-      //                       debugPrint("Message sent.");
-      //                       focusNode.unfocus();
-      //                       replayController.clear();
-      //                       storyController
-      //                           .setTypingState(false); // ✅ Resume all stories
-      //                     },
-      //                   ),
-      //                 )
-      //               ],
-      //             ),
-      //           ),
-      //         ),
-      //       )
-      //     : const SizedBox.shrink(),
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -237,6 +153,45 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
     super.dispose();
   }
 
+  Widget _buildReplayBar(int storyIndex) {
+    debugPrint("Replay bar built for storyIndex: $storyIndex");
+    return StoryReplayBar(
+      storyIndex: storyIndex,
+      replayBar: Container(
+        padding: EdgeInsets.symmetric(horizontal: 10.0),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.7),
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                controller: replayController,
+                focusNode: focusNode,
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: "Reply to story $storyIndex...",
+                  hintStyle: TextStyle(color: Colors.white54),
+                  border: InputBorder.none,
+                ),
+              ),
+            ),
+            IconButton(
+              icon: Icon(Icons.send, color: Colors.white),
+              onPressed: () {
+                if (replayController.text.isNotEmpty) {
+                  print("Reply to story $storyIndex: ${replayController.text}");
+                  replayController.clear();
+                }
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -272,7 +227,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                     imageName: 'car',
                   ),
                 ],
-
+                replayBarBuilder: _buildReplayBar,
                 segmentDuration: [
                   const Duration(seconds: 15),
                   const Duration(seconds: 3)
@@ -302,6 +257,9 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
                     //addBottomBar: false,
                   ),
                 ],
+                replayBarBuilder:
+                    _buildReplayBar, // ✅ Pass dynamic replay bar function
+
                 segmentDuration: [
                   const Duration(seconds: 3),
                   const Duration(seconds: 3),
@@ -401,5 +359,19 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
         ],
       ),
     );
+  }
+}
+
+class StoryReplayBar extends StatelessWidget {
+  final int storyIndex; // Current story index
+  final Widget replayBar;
+
+  const StoryReplayBar(
+      {Key? key, required this.storyIndex, required this.replayBar})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return replayBar;
   }
 }
