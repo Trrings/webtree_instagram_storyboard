@@ -258,7 +258,6 @@ class StoryButtonData {
   final Widget? closeButton;
   final Positioned? addStoryWidget;
   final List<Duration> segmentDuration;
-  final Widget Function(int storyIndex)? replayBarBuilder; // ✅ Added
   final BoxDecoration containerBackgroundDecoration;
   final Color timelineFillColor;
   final Color timelineBackgroundColor;
@@ -322,7 +321,6 @@ class StoryButtonData {
     required this.child,
     required this.storyId,
     required this.segmentDuration,
-    this.replayBarBuilder,
     this.containerBackgroundDecoration = const BoxDecoration(
       color: Color.fromARGB(255, 0, 0, 0),
     ),

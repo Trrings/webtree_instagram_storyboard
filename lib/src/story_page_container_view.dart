@@ -11,7 +11,7 @@ class StoryPageContainerView extends StatefulWidget {
   final Function() onStoryComplete;
   final PageController? pageController;
   final VoidCallback? onClosePressed;
-  final Widget? replayBar;
+
 
   const StoryPageContainerView({
     Key? key,
@@ -19,7 +19,6 @@ class StoryPageContainerView extends StatefulWidget {
     required this.onStoryComplete,
     this.pageController,
     this.onClosePressed,
-    this.replayBar,
   }) : super(key: key);
 
   @override
@@ -239,13 +238,6 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
         children: [
           _buildPageContent(),
           _buildTimeline(),
-          Positioned(
-            bottom: 10,
-            left: 10,
-            right: 10,
-            child: widget.replayBar!,
-            // Use the passed replay bar widget
-          ),
           Positioned(
             top: 0.0,
             left: 0.0,

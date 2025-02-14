@@ -3,19 +3,16 @@ import 'package:flutter_instagram_storyboard/flutter_instagram_storyboard.dart';
 import 'package:flutter_instagram_storyboard/src/first_build_mixin.dart';
 import 'package:flutter_instagram_storyboard/src/set_state_after_frame_mixin.dart';
 
-import 'story_replaybar.dart';
+
 
 class StoryPageContainerBuilder extends StatefulWidget {
   final Animation<double> animation;
   final StoryContainerSettings settings;
-  final Widget Function(int storyIndex)?
-      replayBarBuilder; // ✅ Function to build the replay bar
 
   const StoryPageContainerBuilder({
     Key? key,
     required this.settings,
     required this.animation,
-    this.replayBarBuilder,
   }) : super(key: key);
 
   @override
@@ -233,13 +230,6 @@ class _StoryPageContainerBuilderState extends State<StoryPageContainerBuilder>
                         onClosePressed: _close,
                         pageController: _pageController,
                         onStoryComplete: _onStoryComplete,
-                        replayBar: StoryReplayBar(
-                          storyIndex: index,
-                          replayBar: buttonData.replayBarBuilder != null
-                              ? buttonData.replayBarBuilder!(
-                                  index) // ✅ Pass the replay bar dynamically
-                              : const SizedBox(), // ✅ Use empty widget if none is provided
-                        ),
                       );
                       return _storyPageTransform.transform(
                         context,

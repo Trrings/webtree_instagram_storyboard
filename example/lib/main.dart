@@ -22,112 +22,71 @@ class MyApp extends StatelessWidget {
 }
 
 class StoryExamplePage extends StatefulWidget {
-  const StoryExamplePage({
-    Key? key,
-  }) : super(key: key);
+  const StoryExamplePage({Key? key}) : super(key: key);
 
   @override
   State<StoryExamplePage> createState() => _StoryExamplePageState();
 }
 
 class _StoryExamplePageState extends State<StoryExamplePage> {
-  static const double _borderRadius = 100.0;
   final StoryTimelineController storyController = StoryTimelineController();
-
   final TextEditingController replayController = TextEditingController();
-  final FocusNode focusNode = FocusNode();
 
-  Widget _createDummyPage({
-    required String text,
-    required String imageName,
-  }) {
-    return StoryPageScaffold(
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/$imageName.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              Text(
-                text,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 30.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildButtonChild(String text) {
-    return Padding(
-      padding: const EdgeInsets.all(5.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          const SizedBox(
-            height: 100.0,
-          ),
-          Text(
-            text,
-            style: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.normal,
-              fontSize: 11.0,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-
-  BoxDecoration _buildButtonDecoration(
-    String imageName,
-  ) {
-    return BoxDecoration(
-      borderRadius: BorderRadius.circular(_borderRadius),
-      image: DecorationImage(
-        image: AssetImage(
-          'assets/images/$imageName.png',
-        ),
-        fit: BoxFit.cover,
-      ),
-    );
-  }
-
-  BoxDecoration _buildBorderDecoration(Color color) {
-    return BoxDecoration(
-      borderRadius: const BorderRadius.all(
-        Radius.circular(_borderRadius),
-      ),
-      border: Border.fromBorderSide(
-        BorderSide(
-          color: color,
-          width: 1.5,
-        ),
-      ),
-    );
-  }
+  List<dynamic> storiesList = []; // Store dynamic stories
 
   @override
   void initState() {
     super.initState();
     storyController.addListener(_onStoryEvent);
+    fetchStories(); // Fetch the stories dynamically
+  }
+
+  void fetchStories() {
+    setState(() {
+      storiesList = [
+        {
+          "storyId": "1",
+          "title": "Want a new car?",
+          "image": "car",
+          "pages": [
+            {
+              "text":
+                  "Want to buy a new car? Get our loan for the rest of your life!",
+              "image": "car"
+            },
+            {
+              "text":
+                  "Can't return the loan? Don't worry, we’ll take your soul as collateral ;-)",
+              "image": "car"
+            }
+          ]
+        },
+        {
+          "storyId": "2",
+          "title": "Travel Anywhere",
+          "image": "travel_1",
+          "pages": [
+            {"text": "Get a loan", "image": "travel_1"},
+            {
+              "text": "Select a place where you want to go",
+              "image": "travel_2"
+            },
+            {
+              "text": "Dream about the place and pay our interest",
+              "image": "travel_3"
+            }
+          ]
+        },
+        {
+          "storyId": "3",
+          "title": "Buy a house anywhere",
+          "image": "house",
+          "pages": [
+            {"text": "You cannot buy a house. Live with it", "image": "house"}
+          ]
+        }
+      ];
+    });
   }
 
   void _onStoryEvent(StoryTimelineEvent event, String storyId) {
@@ -135,26 +94,16 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    Future.delayed(Duration(milliseconds: 300), () {
-      if (mounted) {
-        //focusNode.unfocus(); // Unfocus the keyboard when switching stories
-      }
-    });
-  }
-
-  @override
   void dispose() {
-    focusNode.dispose();
     replayController.dispose();
     storyController.removeListener(_onStoryEvent);
     super.dispose();
   }
 
-  Widget _buildReplayBar(int storyIndex) {
-    debugPrint("Replay bar built for storyIndex: $storyIndex");
+  Widget _buildReplayBar(int storyIndex, int pageIndex) {
+    FocusNode focusNode =
+        FocusNode(); // Create a new FocusNode for each replay bar
+
     return StoryReplayBar(
       storyIndex: storyIndex,
       replayBar: Container(
@@ -166,14 +115,20 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
         child: Row(
           children: [
             Expanded(
-              child: TextFormField(
-                controller: replayController,
-                focusNode: focusNode,
-                style: TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: "Reply to story $storyIndex...",
-                  hintStyle: TextStyle(color: Colors.white54),
-                  border: InputBorder.none,
+              child: GestureDetector(
+                onTap: () {
+                  FocusScope.of(context)
+                      .requestFocus(focusNode); // Ensure focus is requested
+                },
+                child: TextFormField(
+                  controller: replayController,
+                  focusNode: focusNode, // Assign a fresh FocusNode
+                  style: TextStyle(color: Colors.white),
+                  decoration: InputDecoration(
+                    hintText: "Reply to story $storyIndex, page $pageIndex...",
+                    hintStyle: TextStyle(color: Colors.white54),
+                    border: InputBorder.none,
+                  ),
                 ),
               ),
             ),
@@ -181,7 +136,8 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
               icon: Icon(Icons.send, color: Colors.white),
               onPressed: () {
                 if (replayController.text.isNotEmpty) {
-                  print("Reply to story $storyIndex: ${replayController.text}");
+                  print(
+                      "Reply to story $storyIndex, page $pageIndex: ${replayController.text}");
                   replayController.clear();
                 }
               },
@@ -189,6 +145,53 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _createStoryPage({
+    required int storyIndex,
+    required int pageIndex,
+    required String text,
+    required String imageName,
+  }) {
+    return Stack(
+      children: [
+        StoryPageScaffold(
+          body: Container(
+            width: double.infinity,
+            height: double.infinity,
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/$imageName.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Text(
+                    text,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 30.0,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          bottom: 10,
+          left: 10,
+          right: 10,
+          child: _buildReplayBar(storyIndex, pageIndex),
+        ),
+      ],
     );
   }
 
@@ -201,161 +204,70 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
       ),
       body: Column(
         children: [
-          StoryListView(
-            listHeight: 180.0,
-            pageTransform: const StoryPage3DTransform(),
-            buttonDatas: [
-              StoryButtonData(
-                storyId: "1",
-                //showAddButton: true,
-                storyController: storyController,
-                timelineBackgroundColor: Colors.red,
-                buttonDecoration: _buildButtonDecoration('car'),
-                child: _buildButtonChild('Want a new car?'),
-
-                borderDecoration: _buildBorderDecoration(Colors.red),
-
-                storyPages: [
-                  _createDummyPage(
-                    text:
-                        'Want to buy a new car? Get our loan for the rest of your life!',
-                    imageName: 'car',
-                  ),
-                  _createDummyPage(
-                    text:
-                        'Can\'t return the loan? Don\'t worry, we\'ll take your soul as a collateral ;-)',
-                    imageName: 'car',
-                  ),
-                ],
-                replayBarBuilder: _buildReplayBar,
-                segmentDuration: [
-                  const Duration(seconds: 15),
-                  const Duration(seconds: 3)
-                ],
-              ),
-              StoryButtonData(
-                storyId: "2",
-                storyController: storyController,
-                timelineBackgroundColor: Colors.blue,
-                buttonDecoration: _buildButtonDecoration('travel_1'),
-                borderDecoration: _buildBorderDecoration(
-                    const Color.fromARGB(255, 134, 119, 95)),
-                child: _buildButtonChild('Travel whereever'),
-                storyPages: [
-                  _createDummyPage(
-                    text: 'Get a loan',
-                    imageName: 'travel_1',
-                  ),
-                  _createDummyPage(
-                    text: 'Select a place where you want to go',
-                    imageName: 'travel_2',
-                    //addBottomBar: false,
-                  ),
-                  _createDummyPage(
-                    text: 'Dream about the place and pay our interest',
-                    imageName: 'travel_3',
-                    //addBottomBar: false,
-                  ),
-                ],
-                replayBarBuilder:
-                    _buildReplayBar, // ✅ Pass dynamic replay bar function
-
-                segmentDuration: [
-                  const Duration(seconds: 3),
-                  const Duration(seconds: 3),
-                  const Duration(seconds: 3),
-                ],
-              ),
-              StoryButtonData(
-                storyId: "3",
-                storyController: storyController,
-                timelineBackgroundColor: Colors.orange,
-                borderDecoration: _buildBorderDecoration(Colors.orange),
-                buttonDecoration: _buildButtonDecoration('house'),
-                child: _buildButtonChild('Buy a house anywhere'),
-                storyPages: [
-                  _createDummyPage(
-                    text: 'You cannot buy a house. Live with it',
-                    imageName: 'house',
-                  ),
-                ],
-                segmentDuration: [const Duration(seconds: 5)],
-              ),
-              StoryButtonData(
-                storyId: "4",
-                storyController: storyController,
-                timelineBackgroundColor: Colors.red,
-                buttonDecoration: _buildButtonDecoration('car'),
-                child: _buildButtonChild('Want a new car?'),
-                borderDecoration: _buildBorderDecoration(Colors.red),
-                storyPages: [
-                  _createDummyPage(
-                    text:
-                        'Want to buy a new car? Get our loan for the rest of your life!',
-                    imageName: 'car',
-                  ),
-                  _createDummyPage(
-                    text:
-                        'Can\'t return the loan? Don\'t worry, we\'ll take your soul as a collateral ;-)',
-                    imageName: 'car',
-                  ),
-                ],
-                segmentDuration: [
-                  const Duration(seconds: 3),
-                  const Duration(seconds: 3)
-                ],
-              ),
-              StoryButtonData(
-                storyId: "5",
-                storyController: storyController,
-                buttonDecoration: _buildButtonDecoration('travel_1'),
-                borderDecoration: _buildBorderDecoration(
-                    const Color.fromARGB(255, 134, 119, 95)),
-                child: _buildButtonChild('Travel whereever'),
-                storyPages: [
-                  _createDummyPage(
-                    text: 'Get a loan',
-                    imageName: 'travel_1',
-                    //addBottomBar: false,
-                  ),
-                  _createDummyPage(
-                    text: 'Select a place where you want to go',
-                    imageName: 'travel_2',
-                    //addBottomBar: false,
-                  ),
-                  _createDummyPage(
-                    text: 'Dream about the place and pay our interest',
-                    imageName: 'travel_3',
-                    //addBottomBar: false,
-                  ),
-                ],
-                segmentDuration: [
-                  const Duration(seconds: 3),
-                  const Duration(seconds: 3),
-                  const Duration(seconds: 3)
-                ],
-              ),
-              StoryButtonData(
-                storyId: "6",
-                isVisibleCallback: () {
-                  return false;
+          if (storiesList.isEmpty)
+            const Center(child: CircularProgressIndicator())
+          else
+            StoryListView(
+              listHeight: 180.0,
+              pageTransform: const StoryPage3DTransform(),
+              buttonDatas: List.generate(
+                storiesList.length,
+                (storyIndex) {
+                  final story = storiesList[storyIndex];
+                  return StoryButtonData(
+                    storyId: story["storyId"],
+                    storyController: storyController,
+                    timelineBackgroundColor: Colors.red,
+                    buttonDecoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100.0),
+                      image: DecorationImage(
+                        image:
+                            AssetImage('assets/images/${story["image"]}.png'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    borderDecoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(
+                        Radius.circular(100.0),
+                      ),
+                      border: Border.all(color: Colors.red, width: 1.5),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 100.0),
+                          Text(
+                            story["title"],
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 11.0,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
+                    storyPages: List.generate(
+                      story["pages"].length,
+                      (pageIndex) => _createStoryPage(
+                        storyIndex: storyIndex,
+                        pageIndex: pageIndex,
+                        text: story["pages"][pageIndex]["text"],
+                        imageName: story["pages"][pageIndex]["image"],
+                      ),
+                    ),
+                    segmentDuration: List.generate(
+                      story["pages"].length,
+                      (_) => const Duration(seconds: 5),
+                    ),
+                  );
                 },
-                timelineBackgroundColor: Colors.orange,
-                borderDecoration: _buildBorderDecoration(Colors.orange),
-                buttonDecoration: _buildButtonDecoration('house'),
-                child: _buildButtonChild('Buy a house anywhere'),
-                storyPages: [
-                  _createDummyPage(
-                    text: 'You cannot buy a house. Live with it',
-                    imageName: 'house',
-                  ),
-                ],
-                segmentDuration: [
-                  const Duration(seconds: 5),
-                ],
               ),
-            ],
-          ),
+            ),
         ],
       ),
     );
@@ -363,7 +275,7 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
 }
 
 class StoryReplayBar extends StatelessWidget {
-  final int storyIndex; // Current story index
+  final int storyIndex;
   final Widget replayBar;
 
   const StoryReplayBar(
