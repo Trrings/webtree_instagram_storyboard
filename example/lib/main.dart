@@ -84,7 +84,24 @@ class _StoryExamplePageState extends State<StoryExamplePage> {
           "pages": [
             {"text": "You cannot buy a house. Live with it", "image": "house"}
           ]
-        }
+        },
+        {
+          "storyId": "3",
+          "title": "Want a new car?",
+          "image": "car",
+          "pages": [
+            {
+              "text":
+                  "Want to buy a new car? Get our loan for the rest of your life!",
+              "image": "car"
+            },
+            {
+              "text":
+                  "Can't return the loan? Don't worry, we’ll take your soul as collateral ;-)",
+              "image": "car"
+            }
+          ]
+        },
       ];
     });
   }

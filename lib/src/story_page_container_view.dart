@@ -163,9 +163,9 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
   Widget _buildPageContent() {
     if (widget.buttonData.storyPages.isEmpty) {
       return Container(
-        color: Colors.orange,
+        color: Colors.black,
         child: const Center(
-          child: Text('No pages'),
+          child: Text('No pages',style: TextStyle(color: Colors.white),),
         ),
       );
     }
