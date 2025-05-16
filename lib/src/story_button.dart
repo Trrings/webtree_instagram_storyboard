@@ -270,6 +270,8 @@ class StoryButtonData {
   final double? addStoryButtonSize;
   final EdgeInsetsGeometry? addStoryButtonPadding;
   final bool showAddButton;
+  final bool isLive;
+  final Function()? liveStreamCallback;
 
   /// Usualy this is required for the final story
   /// to pop it out to its button mosition
@@ -342,6 +344,8 @@ class StoryButtonData {
       ),
     ),
     this.borderOffset = 2.0,
+    this.isLive = false,
+    this.liveStreamCallback,
   }) : assert(
           segmentDuration.first.inMilliseconds % kStoryTimerTickMillis == 0 &&
               segmentDuration.first.inMilliseconds >= 1000,

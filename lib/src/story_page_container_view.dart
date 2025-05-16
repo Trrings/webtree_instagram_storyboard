@@ -249,52 +249,112 @@ class _StoryPageContainerViewState extends State<StoryPageContainerView>
     );
   }
 
+  // void _handleRightTap() {
+  //   if (_storyController._state != null) {
+  //     if (_curSegmentIndex == widget.buttonData.storyPages.length - 1) {
+  //       // Last segment of current story
+  //       _storyController._state!._accumulatedTime =
+  //           _storyController._state!._maxAccumulator;
+  //       _storyController._state!._onStoryComplete();
+  //       widget.onStoryComplete();
+  //     } else {
+  //       // Move to next segment
+  //       _storyController._state!._accumulatedTime =
+  //           _storyController._state!._maxAccumulator;
+  //       _storyController._state!._onSegmentComplete();
+  //       _curSegmentIndex++;
+  //       _storyController._state!._maxAccumulator =
+  //           widget.buttonData.segmentDuration[_curSegmentIndex].inMilliseconds;
+  //       _storyController._state!._accumulatedTime = 0;
+  //     }
+  //     if (_storyController._state!.mounted) {
+  //       _storyController._state!.setState(() {});
+  //     }
+  //   }
+  // }
+
+  // //left-tap
+  // void _handleLeftTap() {
+  //   if (_storyController._state != null) {
+  //     if (_curSegmentIndex == 0) {
+  //       // ✅ First segment of current story, move to the last segment of the previous story
+  //       if (_moveToPreviousUserStory()) {
+  //         return;
+  //       }
+  //     } else {
+  //       //  Move to the previous segment within the same story
+  //       _storyController._state!._accumulatedTime = 0;
+  //       _storyController._state!._onSegmentComplete();
+  //       _curSegmentIndex--;
+  //       _storyController._state!._maxAccumulator =
+  //           widget.buttonData.segmentDuration[_curSegmentIndex].inMilliseconds;
+  //     }
+
+  //     if (_storyController._state!.mounted) {
+  //       _storyController._state!.setState(() {});
+  //     }
+  //   }
+  // }
+
   void _handleRightTap() {
-    if (_storyController._state != null) {
-      if (_curSegmentIndex == widget.buttonData.storyPages.length - 1) {
-        // Last segment of current story
-        _storyController._state!._accumulatedTime =
-            _storyController._state!._maxAccumulator;
-        _storyController._state!._onStoryComplete();
-        widget.onStoryComplete();
-      } else {
-        // Move to next segment
-        _storyController._state!._accumulatedTime =
-            _storyController._state!._maxAccumulator;
-        _storyController._state!._onSegmentComplete();
-        _curSegmentIndex++;
-        _storyController._state!._maxAccumulator =
-            widget.buttonData.segmentDuration[_curSegmentIndex].inMilliseconds;
-        _storyController._state!._accumulatedTime = 0;
-      }
-      if (_storyController._state!.mounted) {
-        _storyController._state!.setState(() {});
-      }
+  if (_storyController._state != null) {
+    // If the story is live, navigate to live stream instead of normal story navigation
+    if (widget.buttonData.isLive && widget.buttonData.liveStreamCallback != null) {
+      widget.buttonData.liveStreamCallback!();
+      return; // Exit early after handling live stream navigation
+    }
+    
+    // Normal story navigation (only executes if not live)
+    if (_curSegmentIndex == widget.buttonData.storyPages.length - 1) {
+      // Last segment of current story
+      _storyController._state!._accumulatedTime =
+          _storyController._state!._maxAccumulator;
+      _storyController._state!._onStoryComplete();
+      widget.onStoryComplete();
+    } else {
+      // Move to next segment
+      _storyController._state!._accumulatedTime =
+          _storyController._state!._maxAccumulator;
+      _storyController._state!._onSegmentComplete();
+      _curSegmentIndex++;
+      _storyController._state!._maxAccumulator =
+          widget.buttonData.segmentDuration[_curSegmentIndex].inMilliseconds;
+      _storyController._state!._accumulatedTime = 0;
+    }
+    if (_storyController._state!.mounted) {
+      _storyController._state!.setState(() {});
     }
   }
-
-  //left-tap
-  void _handleLeftTap() {
-    if (_storyController._state != null) {
-      if (_curSegmentIndex == 0) {
-        // ✅ First segment of current story, move to the last segment of the previous story
-        if (_moveToPreviousUserStory()) {
-          return;
-        }
-      } else {
-        //  Move to the previous segment within the same story
-        _storyController._state!._accumulatedTime = 0;
-        _storyController._state!._onSegmentComplete();
-        _curSegmentIndex--;
-        _storyController._state!._maxAccumulator =
-            widget.buttonData.segmentDuration[_curSegmentIndex].inMilliseconds;
+}
+ 
+void _handleLeftTap() {
+  if (_storyController._state != null) {
+    // If the story is live, navigate to live stream instead of normal story navigation
+    if (widget.buttonData.isLive && widget.buttonData.liveStreamCallback != null) {
+      widget.buttonData.liveStreamCallback!();
+      return; // Exit early after handling live stream navigation
+    }
+    
+    // Normal story navigation (only executes if not live)
+    if (_curSegmentIndex == 0) {
+      // First segment of current story, move to the last segment of the previous story
+      if (_moveToPreviousUserStory()) {
+        return;
       }
-
-      if (_storyController._state!.mounted) {
-        _storyController._state!.setState(() {});
-      }
+    } else {
+      // Move to the previous segment within the same story
+      _storyController._state!._accumulatedTime = 0;
+      _storyController._state!._onSegmentComplete();
+      _curSegmentIndex--;
+      _storyController._state!._maxAccumulator =
+          widget.buttonData.segmentDuration[_curSegmentIndex].inMilliseconds;
+    }
+ 
+    if (_storyController._state!.mounted) {
+      _storyController._state!.setState(() {});
     }
   }
+}
 
   bool _moveToPreviousUserStory() {
     final pageController = widget.pageController;
